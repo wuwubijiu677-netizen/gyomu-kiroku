@@ -3,35 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>業務の記録 入力フォーム</title>
+<title>業務の記録</title>
 
 <style>
-/* ===============================
-   全体
-=============================== */
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #eef3f7;
+  font-family: system-ui, -apple-system;
+  background: #e5e9f0;
   margin: 0;
   padding: 12px;
 }
 
 h1 {
   text-align: center;
-  font-size: 20px;
   margin-bottom: 16px;
 }
 
-/* ===============================
-   カード
-=============================== */
 .card {
-  background: #ffffff;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 14px;
   padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 label {
@@ -40,37 +32,32 @@ label {
   margin-bottom: 6px;
 }
 
-/* ===============================
-   入力
-=============================== */
-input[type="date"],
-input[type="time"],
-input[type="number"],
-textarea {
+input, textarea {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  border-radius: 10px;
+  border: 1px solid #bbb;
 }
 
-textarea {
-  resize: vertical;
+.inline {
+  display: flex;
+  gap: 12px;
 }
 
-/* ===============================
-   トグルスイッチ
-=============================== */
+.inline > div {
+  flex: 1;
+}
+
+/* ===== トグル ===== */
 .toggle-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.toggle-text {
+  font-weight: bold;
 }
 
 .toggle input {
@@ -78,101 +65,101 @@ textarea {
 }
 
 .slider {
-  width: 56px;
-  height: 28px;
-  background: #9e9e9e;       /* OFF */
-  border-radius: 14px;
+  width: 60px;
+  height: 30px;
+  background: #666;
+  border-radius: 15px;
   position: relative;
-  border: 2px solid #666;
   cursor: pointer;
-  transition: background 0.3s;
 }
 
 .slider::before {
   content: "";
   position: absolute;
-  width: 22px;
-  height: 22px;
-  top: 1px;
-  left: 1px;
-  background: #ffffff;
+  width: 24px;
+  height: 24px;
+  top: 3px;
+  left: 3px;
+  background: #fff;
   border-radius: 50%;
-  transition: transform 0.3s;
+  transition: 0.3s;
 }
 
 input:checked + .slider {
-  background: #1976d2;       /* ON */
-  border-color: #0d47a1;
+  background: #2e7d32;
 }
 
 input:checked + .slider::before {
-  transform: translateX(28px);
+  transform: translateX(30px);
 }
 
-.result-text {
-  font-weight: bold;
-  color: #0d47a1;
+/* ===== 点検 ===== */
+.checklist label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
-/* ===============================
-   ボタン
-=============================== */
+/* ===== ボタン ===== */
 button {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   font-size: 18px;
-  border-radius: 10px;
-  border: none;
+  font-weight: bold;
   background: #1976d2;
   color: #fff;
-  cursor: pointer;
-}
-
-button:active {
-  background: #0d47a1;
+  border: none;
+  border-radius: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>業務の記録 入力</h1>
+<h1>業務の記録</h1>
 
 <div class="card">
   <label>日付</label>
   <input type="date" id="date">
 </div>
 
-<div class="card">
-  <label>点呼区分</label>
-  <div class="toggle-row">
-    <span id="callTypeText">業務前</span>
-    <label class="toggle">
-      <input type="checkbox" id="callType">
-      <span class="slider"></span>
-    </label>
+<div class="card inline">
+  <div>
+    <label>点呼時刻</label>
+    <input type="time" id="callTime">
+  </div>
+  <div>
+    <label>点呼区分</label>
+    <div class="toggle-row">
+      <span id="callTypeText" class="toggle-text">業務前</span>
+      <label class="toggle">
+        <input type="checkbox" id="callType">
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 </div>
 
 <div class="card">
-  <label>点呼時刻</label>
-  <input type="time" id="callTime">
+  <label>走行距離（運行前）km</label>
+  <input type="number" id="beforeKm">
 </div>
 
 <div class="card">
-  <label>走行距離（運行前）</label>
-  <input type="number" id="distanceBefore">
+  <label>走行距離（運行後）km</label>
+  <input type="number" id="afterKm">
 </div>
 
 <div class="card">
-  <label>走行距離（運行後）</label>
-  <input type="number" id="distanceAfter">
+  <label>当日の総走行距離 km</label>
+  <input type="number" id="totalKm" readonly>
 </div>
 
 <div class="card">
-  <label>アルコールチェック</label>
+  <label>アルコール検知器</label>
   <div class="toggle-row">
-    <span id="alcoholText">異常なし</span>
+    <span id="alcoholText">未使用</span>
     <label class="toggle">
       <input type="checkbox" id="alcohol">
       <span class="slider"></span>
@@ -183,7 +170,7 @@ button:active {
 <div class="card">
   <label>健康状態</label>
   <div class="toggle-row">
-    <span id="healthText">良好</span>
+    <span id="healthText">未確認</span>
     <label class="toggle">
       <input type="checkbox" id="health">
       <span class="slider"></span>
@@ -193,71 +180,48 @@ button:active {
 
 <div class="card">
   <label>業務内容</label>
-  <textarea id="workType" rows="3"></textarea>
+  <textarea id="workType"></textarea>
 </div>
 
-<div class="card">
-  <label>運行前点検</label>
-  <div>
-    <label><input type="checkbox" id="tire"> タイヤ（空気圧・摩耗）</label><br>
-    <label><input type="checkbox" id="oil"> 油脂類</label><br>
-    <label><input type="checkbox" id="lamp"> 灯火類</label><br>
-    <label><input type="checkbox" id="engine"> エンジン</label>
-  </div>
+<div class="card checklist">
+  <label>点検項目</label>
+  <label><input type="checkbox" id="tire"> タイヤ</label>
+  <label><input type="checkbox" id="oil"> 油脂類</label>
+  <label><input type="checkbox" id="lamp"> 灯火類</label>
+  <label><input type="checkbox" id="engine"> エンジン</label>
 </div>
 
-<button onclick="save()">保存</button>
+<button>保存（次でGAS接続）</button>
 
 <script>
-/* ===============================
-   GAS WebApp URL
-=============================== */
-const GAS_WEBAPP_URL = "ここをあなたのGASのURLに変更";
+/* ===== 初期値 ===== */
+const now = new Date();
+date.value = now.toISOString().slice(0,10);
+callTime.value = now.toTimeString().slice(0,5);
 
-/* ===============================
-   トグル表示切替
-=============================== */
+/* ===== 点呼区分 ===== */
 callType.onchange = () => {
   callTypeText.textContent = callType.checked ? "業務後" : "業務前";
 };
 
-alcohol.onchange = () => {
-  alcoholText.textContent = alcohol.checked ? "検出あり" : "異常なし";
-};
-
-health.onchange = () => {
-  healthText.textContent = health.checked ? "不調" : "良好";
-};
-
-/* ===============================
-   保存処理
-=============================== */
-function save() {
-  const data = {
-    date: date.value,
-    callType: callType.checked ? "業務後" : "業務前",
-    callTime: callTime.value,
-    distanceBefore: distanceBefore.value,
-    distanceAfter: distanceAfter.value,
-    alcohol: alcohol.checked ? "あり" : "なし",
-    health: health.checked ? "不調" : "良好",
-    workType: workType.value,
-    tire: tire.checked ? "OK" : "NG",
-    oil: oil.checked ? "OK" : "NG",
-    lamp: lamp.checked ? "OK" : "NG",
-    engine: engine.checked ? "OK" : "NG"
-  };
-
-  fetch(GAS_WEBAPP_URL, {
-    method: "POST",
-    body: JSON.stringify(data)
-  })
-  .then(() => alert("保存しました"))
-  .catch(() => alert("保存に失敗しました"));
+/* ===== 距離計算 ===== */
+function calcKm() {
+  const b = Number(beforeKm.value);
+  const a = Number(afterKm.value);
+  totalKm.value = (!isNaN(b) && !isNaN(a) && a >= b) ? a - b : "";
 }
+beforeKm.oninput = afterKm.oninput = calcKm;
+
+/* ===== アルコール ===== */
+alcohol.onchange = () => {
+  alcoholText.textContent = alcohol.checked ? "使用" : "未使用";
+};
+
+/* ===== 健康 ===== */
+health.onchange = () => {
+  healthText.textContent = health.checked ? "良好" : "未確認";
+};
 </script>
 
 </body>
 </html>
-
-
