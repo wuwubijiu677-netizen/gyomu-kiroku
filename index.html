@@ -2,30 +2,39 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>業務の記録</title>
 
 <style>
+/* ===== 全体 ===== */
 body {
   font-family: system-ui, -apple-system;
-  background: #e5e9f0;
+  background: #e6ebf2;
   margin: 0;
   padding: 12px;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 16px;
+/* PCでも広がらない */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
 }
 
+h1 {
+  text-align: center;
+  margin: 12px 0 20px;
+}
+
+/* ===== カード ===== */
 .card {
   background: #fff;
   border-radius: 14px;
   padding: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
+/* ===== 入力 ===== */
 label {
   font-weight: bold;
   display: block;
@@ -40,12 +49,17 @@ input, textarea {
   border: 1px solid #bbb;
 }
 
-.inline {
+textarea {
+  resize: vertical;
+}
+
+/* ===== 横並び ===== */
+.row {
   display: flex;
   gap: 12px;
 }
 
-.inline > div {
+.row > div {
   flex: 1;
 }
 
@@ -58,6 +72,7 @@ input, textarea {
 
 .toggle-text {
   font-weight: bold;
+  font-size: 16px;
 }
 
 .toggle input {
@@ -94,11 +109,9 @@ input:checked + .slider::before {
 }
 
 /* ===== 点検 ===== */
-.checklist label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+.checks label {
+  display: block;
+  margin: 6px 0;
 }
 
 /* ===== ボタン ===== */
@@ -110,118 +123,104 @@ button {
   background: #1976d2;
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 </style>
 </head>
 
 <body>
+<div class="container">
 
 <h1>業務の記録</h1>
 
-<div class="card">
-  <label>日付</label>
-  <input type="date" id="date">
-</div>
-
-<div class="card inline">
+<div class="card row">
+  <div>
+    <label>日付</label>
+    <input type="date" id="date">
+  </div>
   <div>
     <label>点呼時刻</label>
     <input type="time" id="callTime">
   </div>
-  <div>
-    <label>点呼区分</label>
-    <div class="toggle-row">
-      <span id="callTypeText" class="toggle-text">業務前</span>
-      <label class="toggle">
-        <input type="checkbox" id="callType">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
 </div>
 
-<div class="card">
-  <label>走行距離（運行前）km</label>
+<div class="card toggle-row">
+  <span id="callTypeText" class="toggle-text">業務前</span>
+  <label class="toggle">
+    <input type="checkbox" id="callType">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="card" id="beforeBlock">
+  <label>走行距離（運行前）</label>
   <input type="number" id="beforeKm">
 </div>
 
-<div class="card">
-  <label>走行距離（運行後）km</label>
+<div class="card" id="afterBlock" style="display:none">
+  <label>走行距離（運行後）</label>
   <input type="number" id="afterKm">
+  <p>当日距離：<b id="totalKm">―</b> km</p>
 </div>
 
-<div class="card">
-  <label>当日の総走行距離 km</label>
-  <input type="number" id="totalKm" readonly>
+<div class="card toggle-row">
+  <span id="alcoholText" class="toggle-text">アルコール未使用</span>
+  <label class="toggle">
+    <input type="checkbox" id="alcohol">
+    <span class="slider"></span>
+  </label>
 </div>
 
-<div class="card">
-  <label>アルコール検知器</label>
-  <div class="toggle-row">
-    <span id="alcoholText">未使用</span>
-    <label class="toggle">
-      <input type="checkbox" id="alcohol">
-      <span class="slider"></span>
-    </label>
-  </div>
-</div>
-
-<div class="card">
-  <label>健康状態</label>
-  <div class="toggle-row">
-    <span id="healthText">未確認</span>
-    <label class="toggle">
-      <input type="checkbox" id="health">
-      <span class="slider"></span>
-    </label>
-  </div>
+<div class="card toggle-row">
+  <span id="healthText" class="toggle-text">健康未確認</span>
+  <label class="toggle">
+    <input type="checkbox" id="health">
+    <span class="slider"></span>
+  </label>
 </div>
 
 <div class="card">
   <label>業務内容</label>
-  <textarea id="workType"></textarea>
+  <textarea id="work"></textarea>
 </div>
 
-<div class="card checklist">
-  <label>点検項目</label>
+<div class="card checks">
   <label><input type="checkbox" id="tire"> タイヤ</label>
   <label><input type="checkbox" id="oil"> 油脂類</label>
   <label><input type="checkbox" id="lamp"> 灯火類</label>
   <label><input type="checkbox" id="engine"> エンジン</label>
 </div>
 
-<button>保存（次でGAS接続）</button>
+<button id="save">保存</button>
+
+</div>
 
 <script>
-/* ===== 初期値 ===== */
+/* 初期日付 */
 const now = new Date();
 date.value = now.toISOString().slice(0,10);
 callTime.value = now.toTimeString().slice(0,5);
 
-/* ===== 点呼区分 ===== */
+/* 業務前後 */
 callType.onchange = () => {
-  callTypeText.textContent = callType.checked ? "業務後" : "業務前";
+  const after = callType.checked;
+  callTypeText.textContent = after ? "業務後" : "業務前";
+  beforeBlock.style.display = after ? "none" : "block";
+  afterBlock.style.display = after ? "block" : "none";
 };
 
-/* ===== 距離計算 ===== */
-function calcKm() {
+/* 距離計算 */
+afterKm.oninput = () => {
   const b = Number(beforeKm.value);
   const a = Number(afterKm.value);
-  totalKm.value = (!isNaN(b) && !isNaN(a) && a >= b) ? a - b : "";
-}
-beforeKm.oninput = afterKm.oninput = calcKm;
-
-/* ===== アルコール ===== */
-alcohol.onchange = () => {
-  alcoholText.textContent = alcohol.checked ? "使用" : "未使用";
+  totalKm.textContent = (a >= b) ? (a - b) : "―";
 };
 
-/* ===== 健康 ===== */
-health.onchange = () => {
-  healthText.textContent = health.checked ? "良好" : "未確認";
-};
+/* 表示切替 */
+alcohol.onchange = () => alcoholText.textContent = alcohol.checked ? "アルコール使用" : "アルコール未使用";
+health.onchange = () => healthText.textContent = health.checked ? "健康良好" : "健康未確認";
 </script>
 
 </body>
 </html>
+
