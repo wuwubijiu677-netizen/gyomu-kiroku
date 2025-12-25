@@ -24,6 +24,64 @@
     .hidden { display:none; }
     button { width:100%; margin-top:24px; padding:14px; font-size:18px;
              background:#00bcd4; color:#fff; border:none; border-radius:8px; }
+   .check-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 16px;
+}
+  <style>
+/* iOS風トグルスイッチ */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: .3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .3s;
+}
+
+.switch input:checked + .slider {
+  background-color: #00bcd4;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.switch-text {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+    
   </style>
 </head>
 
@@ -44,8 +102,13 @@
   </div>
 
   <label>
-    <input type="checkbox" id="callTypeToggle">
-    点呼区分：<span id="callTypeResult">業務前</span>
+   <label class="switch-label">点呼区分</label>
+<label class="switch">
+  <input type="checkbox" id="callTypeToggle">
+  <span class="slider"></span>
+</label>
+<span id="callTypeResult" class="switch-text">業務前</span>
+ 
   </label>
   <input type="hidden" id="callTypeHidden" value="業務前">
 
@@ -85,6 +148,42 @@
     <input type="checkbox" name="before" value="免許証携帯確認">
     免許証携帯確認
   </div>
+  <div id="checklistBefore">
+  <label>点検項目（業務前）</label>
+
+  <div class="check-item">
+    <span>アルコールチェック</span>
+    <label class="switch">
+      <input type="checkbox" name="before" value="アルコールチェック">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="check-item">
+    <span>体調確認</span>
+    <label class="switch">
+      <input type="checkbox" name="before" value="体調確認">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="check-item">
+    <span>車両点検（灯火類・タイヤ・ブレーキ）</span>
+    <label class="switch">
+      <input type="checkbox" name="before" value="車両点検（灯火類・タイヤ・ブレーキ）">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="check-item">
+    <span>免許証携帯確認</span>
+    <label class="switch">
+      <input type="checkbox" name="before" value="免許証携帯確認">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
 </div>
 
 <!-- 点検項目（業務後） -->
@@ -95,6 +194,33 @@
     <input type="checkbox" name="after" value="車両異常確認">
     車両異常確認
   </div>
+<div id="checklistAfter" class="hidden">
+  <label>点検項目（業務後）</label>
+
+  <div class="check-item">
+    <span>車両異常確認</span>
+    <label class="switch">
+      <input type="checkbox" name="after" value="車両異常確認">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="check-item">
+    <span>忘れ物確認</span>
+    <label class="switch">
+      <input type="checkbox" name="after" value="忘れ物確認">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="check-item">
+    <span>車内清掃</span>
+    <label class="switch">
+      <input type="checkbox" name="after" value="車内清掃">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
 
 
 </form>
@@ -119,6 +245,20 @@ document.getElementById('callTypeToggle').addEventListener('change', e => {
   document.getElementById('callTypeHidden').value = after ? '業務後' : '業務前';
   document.getElementById('afterLabel').classList.toggle('hidden', !after);
   document.getElementById('distanceAfter').classList.toggle('hidden', !after);
+});
+document.getElementById('callTypeToggle').addEventListener('change', e => {
+  const after = e.target.checked;
+
+  document.getElementById('callTypeResult').textContent = after ? '業務後' : '業務前';
+  document.getElementById('callTypeHidden').value = after ? '業務後' : '業務前';
+
+  // 距離入力欄の切替
+  document.getElementById('afterLabel').classList.toggle('hidden', !after);
+  document.getElementById('distanceAfter').classList.toggle('hidden', !after);
+
+  // チェックリスト切替
+  document.getElementById('checklistBefore').classList.toggle('hidden', after);
+  document.getElementById('checklistAfter').classList.toggle('hidden', !after);
 });
 
 /************ 送信 ************/
