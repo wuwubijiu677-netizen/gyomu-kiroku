@@ -59,6 +59,44 @@
   <input type="text" id="workType" required>
 
   <button type="submit">登録を保存する</button>
+  <!-- 点検項目（業務前） -->
+<div id="checklistBefore">
+  <label>点検項目（業務前）</label>
+
+  <div class="check-item">
+    <input type="checkbox" name="before" value="アルコール検知器の使用の有無">
+    アルコール検知器の使用の有無
+  </div>
+
+  <div class="check-item">
+    <input type="checkbox" name="before" value="体調確認（良好・不調）">
+    体調確認（良好・不調）
+  </div>
+
+  <div class="check-item">
+    <input type="checkbox" name="before" value="車両点検（灯火類・タイヤ・ブレーキ）">
+    車両点検（灯火類・タイヤ・ブレーキ）
+  </div>
+<div class="check-item">
+  <input type="checkbox" name="before" value="酒気帯びの有無 ">
+    酒気帯びの有無
+ </div>
+  <div class="check-item">
+    <input type="checkbox" name="before" value="免許証携帯確認">
+    免許証携帯確認
+  </div>
+</div>
+
+<!-- 点検項目（業務後） -->
+<div id="checklistAfter" class="hidden">
+  <label>点検項目（業務後）</label>
+
+  <div class="check-item">
+    <input type="checkbox" name="after" value="車両異常確認">
+    車両異常確認
+  </div>
+
+
 </form>
 
 <script>
