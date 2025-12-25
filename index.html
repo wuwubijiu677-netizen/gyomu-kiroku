@@ -1,226 +1,181 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>業務の記録</title>
 
 <style>
 /* ===== 全体 ===== */
 body {
-  font-family: system-ui, -apple-system;
-  background: #e6ebf2;
   margin: 0;
-  padding: 12px;
+  background: #f2f2f2;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* PCでも広がらない */
 .container {
-  max-width: 680px;
+  max-width: 420px;
   margin: 0 auto;
+  padding: 16px;
+  background: #ffffff;
+  min-height: 100vh;
 }
 
+/* ===== 見出し ===== */
 h1 {
   text-align: center;
-  margin: 12px 0 20px;
+  margin-bottom: 20px;
 }
 
-/* ===== カード ===== */
-.card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
-
-/* ===== 入力 ===== */
+/* ===== フォーム ===== */
 label {
-  font-weight: bold;
   display: block;
-  margin-bottom: 6px;
+  margin-top: 14px;
+  font-weight: bold;
 }
 
-input, textarea {
+input, select, textarea {
   width: 100%;
   padding: 10px;
+  margin-top: 6px;
   font-size: 16px;
-  border-radius: 10px;
-  border: 1px solid #bbb;
+  box-sizing: border-box;
 }
 
-textarea {
-  resize: vertical;
+/* ===== 業務前 / 業務後 トグル（完全視認版） ===== */
+.toggle-area {
+  margin: 20px 0;
+  text-align: center;
 }
 
-/* ===== 横並び ===== */
-.row {
+.toggle-box {
   display: flex;
-  gap: 12px;
+  border: 3px solid #999;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.row > div {
+.toggle-box div {
   flex: 1;
-}
-
-/* ===== トグル ===== */
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.toggle-text {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.toggle input {
-  display: none;
-}
-
-.slider {
-  width: 60px;
-  height: 30px;
-  background: #666;
-  border-radius: 15px;
-  position: relative;
-  cursor: pointer;
-}
-
-.slider::before {
-  content: "";
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  top: 3px;
-  left: 3px;
-  background: #fff;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-input:checked + .slider {
-  background: #2e7d32;
-}
-
-input:checked + .slider::before {
-  transform: translateX(30px);
-}
-
-/* ===== 点検 ===== */
-.checks label {
-  display: block;
-  margin: 6px 0;
-}
-
-/* ===== ボタン ===== */
-button {
-  width: 100%;
-  padding: 16px;
+  padding: 14px 0;
   font-size: 18px;
   font-weight: bold;
-  background: #1976d2;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+/* OFF（業務前） */
+.toggle-off {
+  background: #e0e0e0;
+  color: #555;
+}
+
+/* ON（業務後） */
+.toggle-on {
+  background: #0057d9;
   color: #fff;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.4);
+}
+
+/* ===== 点検項目 ===== */
+.check-group {
+  margin-top: 16px;
+}
+
+.check-group label {
+  font-weight: normal;
+  display: block;
+}
+
+/* ===== 送信ボタン ===== */
+button {
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  background: #007aff;
+  color: white;
   border: none;
-  border-radius: 14px;
+  border-radius: 8px;
 }
 </style>
 </head>
 
 <body>
 <div class="container">
+  <h1>業務の記録</h1>
 
-<h1>業務の記録</h1>
-
-<div class="card row">
-  <div>
-    <label>日付</label>
-    <input type="date" id="date">
+  <!-- トグル -->
+  <div class="toggle-area">
+    <div class="toggle-box">
+      <div id="beforeBtn" class="toggle-on">業務前</div>
+      <div id="afterBtn" class="toggle-off">業務後</div>
+    </div>
+    <input type="hidden" id="callType" value="業務前">
   </div>
-  <div>
-    <label>点呼時刻</label>
-    <input type="time" id="callTime">
-  </div>
-</div>
 
-<div class="card toggle-row">
-  <span id="callTypeText" class="toggle-text">業務前</span>
-  <label class="toggle">
-    <input type="checkbox" id="callType">
-    <span class="slider"></span>
-  </label>
-</div>
+  <!-- フォーム -->
+  <label>日付</label>
+  <input type="date" id="date">
 
-<div class="card" id="beforeBlock">
-  <label>走行距離（運行前）</label>
-  <input type="number" id="beforeKm">
-</div>
+  <label>点呼時刻</label>
+  <input type="time" id="callTime">
 
-<div class="card" id="afterBlock" style="display:none">
-  <label>走行距離（運行後）</label>
-  <input type="number" id="afterKm">
-  <p>当日距離：<b id="totalKm">―</b> km</p>
-</div>
+  <label>走行距離（前）</label>
+  <input type="number" id="distanceBefore">
 
-<div class="card toggle-row">
-  <span id="alcoholText" class="toggle-text">アルコール未使用</span>
-  <label class="toggle">
-    <input type="checkbox" id="alcohol">
-    <span class="slider"></span>
-  </label>
-</div>
+  <label>走行距離（後）</label>
+  <input type="number" id="distanceAfter">
 
-<div class="card toggle-row">
-  <span id="healthText" class="toggle-text">健康未確認</span>
-  <label class="toggle">
-    <input type="checkbox" id="health">
-    <span class="slider"></span>
-  </label>
-</div>
+  <label>アルコール</label>
+  <select id="alcohol">
+    <option value="異常なし">異常なし</option>
+    <option value="検知あり">検知あり</option>
+  </select>
 
-<div class="card">
+  <label>健康状態</label>
+  <select id="health">
+    <option value="良好">良好</option>
+    <option value="注意">注意</option>
+  </select>
+
   <label>業務内容</label>
-  <textarea id="work"></textarea>
-</div>
+  <textarea id="workType"></textarea>
 
-<div class="card checks">
-  <label><input type="checkbox" id="tire"> タイヤ</label>
-  <label><input type="checkbox" id="oil"> 油脂類</label>
-  <label><input type="checkbox" id="lamp"> 灯火類</label>
-  <label><input type="checkbox" id="engine"> エンジン</label>
-</div>
+  <div class="check-group">
+    <label><input type="checkbox" id="tire"> タイヤ</label>
+    <label><input type="checkbox" id="oil"> 油脂類</label>
+    <label><input type="checkbox" id="lamp"> 灯火類</label>
+    <label><input type="checkbox" id="engine"> エンジン</label>
+  </div>
 
-<button id="save">保存</button>
-
+  <button onclick="submitData()">保存</button>
 </div>
 
 <script>
-/* 初期日付 */
-const now = new Date();
-date.value = now.toISOString().slice(0,10);
-callTime.value = now.toTimeString().slice(0,5);
+/* ===== トグル制御 ===== */
+const beforeBtn = document.getElementById("beforeBtn");
+const afterBtn  = document.getElementById("afterBtn");
+const callType  = document.getElementById("callType");
 
-/* 業務前後 */
-callType.onchange = () => {
-  const after = callType.checked;
-  callTypeText.textContent = after ? "業務後" : "業務前";
-  beforeBlock.style.display = after ? "none" : "block";
-  afterBlock.style.display = after ? "block" : "none";
+beforeBtn.onclick = () => {
+  beforeBtn.className = "toggle-on";
+  afterBtn.className  = "toggle-off";
+  callType.value = "業務前";
 };
 
-/* 距離計算 */
-afterKm.oninput = () => {
-  const b = Number(beforeKm.value);
-  const a = Number(afterKm.value);
-  totalKm.textContent = (a >= b) ? (a - b) : "―";
+afterBtn.onclick = () => {
+  beforeBtn.className = "toggle-off";
+  afterBtn.className  = "toggle-on";
+  callType.value = "業務後";
 };
 
-/* 表示切替 */
-alcohol.onchange = () => alcoholText.textContent = alcohol.checked ? "アルコール使用" : "アルコール未使用";
-health.onchange = () => healthText.textContent = health.checked ? "健康良好" : "健康未確認";
+/* ===== 送信（今は確認用） ===== */
+function submitData() {
+  alert("入力OK（保存処理は次）");
+}
 </script>
-
 </body>
 </html>
-
