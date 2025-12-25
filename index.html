@@ -71,7 +71,7 @@ input, textarea {
 .slider {
   width: 60px;
   height: 30px;
-  background: #555;
+  background: #666;
   border-radius: 30px;
   position: relative;
   border: 2px solid #888;
@@ -100,14 +100,13 @@ input:checked + .slider::before {
   transform: translateX(30px);
 }
 
+/* ★ ON / OFF 文字はどちらも白 */
 .result {
   min-width: 64px;
   text-align: right;
   font-weight: bold;
+  color: #ffffff;
 }
-
-.result.off { color: #bbbbbb; }
-.result.on  { color: #64b5f6; }
 
 /* ===== 点検 ===== */
 fieldset {
@@ -144,10 +143,10 @@ button {
 <h2>業務の記録</h2>
 
 <label>日付</label>
-<input type="date">
+<input type="date" id="dateInput">
 
 <label>点呼時刻</label>
-<input type="time">
+<input type="time" id="timeInput">
 
 <div class="toggle">
   <span>点呼区分</span>
@@ -155,7 +154,7 @@ button {
     <input type="checkbox" id="callToggle">
     <span class="slider"></span>
   </label>
-  <span id="callResult" class="result off">業務前</span>
+  <span id="callResult" class="result">業務前</span>
 </div>
 
 <label>走行距離（運行前）</label>
@@ -170,7 +169,7 @@ button {
     <input type="checkbox" id="alcToggle">
     <span class="slider"></span>
   </label>
-  <span id="alcResult" class="result off">未使用</span>
+  <span id="alcResult" class="result">未使用</span>
 </div>
 
 <label>業務内容</label>
@@ -189,30 +188,33 @@ button {
 </form>
 
 <script>
+/* ===== 日付・時刻 自動入力 ===== */
+window.addEventListener("load", () => {
+  const now = new Date();
+
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
+
+  document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
+  document.getElementById("timeInput").value = `${hh}:${min}`;
+});
+
+/* ===== トグル動作 ===== */
 const callToggle = document.getElementById("callToggle");
 const callResult = document.getElementById("callResult");
 
 callToggle.onchange = () => {
-  if (callToggle.checked) {
-    callResult.textContent = "業務後";
-    callResult.className = "result on";
-  } else {
-    callResult.textContent = "業務前";
-    callResult.className = "result off";
-  }
+  callResult.textContent = callToggle.checked ? "業務後" : "業務前";
 };
 
 const alcToggle = document.getElementById("alcToggle");
 const alcResult = document.getElementById("alcResult");
 
 alcToggle.onchange = () => {
-  if (alcToggle.checked) {
-    alcResult.textContent = "使用";
-    alcResult.className = "result on";
-  } else {
-    alcResult.textContent = "未使用";
-    alcResult.className = "result off";
-  }
+  alcResult.textContent = alcToggle.checked ? "使用" : "未使用";
 };
 </script>
 
