@@ -63,31 +63,7 @@ input, textarea {
   margin: 20px 16px;
   color: #ffffff;
 }
-/* ===== トグル ON / OFF 視認性強化（レイアウト不変更） ===== */
 
-.slider {
-  background: #ffffff;
-  border: 2px solid #999;
-}
-
-.slider::before {
-  background: #cccccc;
-}
-
-/* ON 状態 */
-input:checked + .slider {
-  background: #ffffff;
-  border-color: #00e5ff;
-}
-
-input:checked + .slider::before {
-  background: #00e5ff;
-  transform: translateX(30px);
-}
-
-.result-text {
-  font-weight: bold;
-}
 
 .toggle input {
   display: none;
@@ -158,6 +134,31 @@ button {
   border: none;
   border-radius: 8px;
 }
+  /* ===== トグル ON / OFF 視認性強化（レイアウト不変更） ===== */
+
+.slider {
+  background: #ffffff;
+  border: 2px solid #999;
+}
+
+.slider::before {
+  background: #cccccc;
+}
+
+/* ON 状態 */
+input:checked + .slider {
+  background: #ffffff;
+  border-color: #00e5ff;
+}
+
+input:checked + .slider::before {
+  background: #00e5ff;
+  transform: translateX(30px);
+}
+
+.result-text {
+  font-weight: bold;
+}
 </style>
 </head>
 
@@ -189,7 +190,7 @@ button {
 <input type="number">
 
 <div class="toggle">
-  <span>アルコール</span>
+  <span>アルコール検知器の使用の有無</span>
   <label>
     <input type="checkbox" id="alcToggle">
     <span class="slider"></span>
