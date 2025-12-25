@@ -90,31 +90,6 @@ input, textarea {
   box-shadow: 0 2px 6px rgba(0,0,0,0.6);
   transition: transform 0.3s;
 }
-/* OFF（白）状態 */
-.slider {
-  width: 60px;
-  height: 30px;
-  background: #ffffff; /* 白 */
-  border-radius: 30px;
-  position: relative;
-  border: 2px solid #888;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-/* ノブ（つまみ） */
-.slider::before {
-  content: "";
-  width: 26px;
-  height: 26px;
-  background: #666; /* グレーのノブ */
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: left 0.3s;
-}
-
 /* ON（赤）状態 */
 .slider.on {
   background: #ff0000; /* 赤 */
