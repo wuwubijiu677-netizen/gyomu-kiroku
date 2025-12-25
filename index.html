@@ -2,76 +2,66 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>業務の記録</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-<link rel="apple-touch-icon" sizes="180x180" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
-<link rel="icon" type="image/png" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#000000">
+<title>業務の記録</title>
 
 <style>
+/* ===== 外側（白） ===== */
 body {
-  font-family: system-ui, -apple-system;
-  background: #ffffff;
   margin: 0;
-  padding: 0;
+  background: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-h2 {
-  text-align: center;
-  margin-top: 24px;
-  color: #000;
-}
-
+/* ===== 内側フォーム（黒） ===== */
 form {
-  max-width: 600px;
-  margin: 24px auto;
-  background: #000;
-  color: #fff;
-  padding: 24px;
-  border-radius: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+  background: #000000;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 24px;
 }
 
-label {
+/* ===== タイトル ===== */
+h2 {
+  margin: 0;
+  padding: 14px 0;
+  text-align: center;
+  background: #000000;
+  color: #ffffff;
+  font-size: 20px;
+  border-bottom: 1px solid #333;
+}
+
+/* ===== ラベル ===== */
+label, legend {
   display: block;
-  margin-top: 16px;
+  margin: 16px 16px 6px;
   font-weight: bold;
+  color: #ffffff;
 }
 
-input[type="text"],
-input[type="date"],
-input[type="time"],
-input[type="number"] {
-  width: 100%;
+/* ===== 入力 ===== */
+input, textarea {
+  width: calc(100% - 32px);
+  margin: 0 16px;
   padding: 10px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: none;
   font-size: 16px;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 4px;
+  border: none;
 }
 
-.inline-group {
-  display: flex;
-  gap: 16px;
-}
-
-.distance-input {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.unit {
-  color: #fff;
-}
-
+/* ===== トグル ===== */
 .toggle {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 16px;
+  justify-content: space-between;
+  margin: 20px 16px;
+  color: #ffffff;
 }
 
 .toggle input {
@@ -79,12 +69,12 @@ input[type="number"] {
 }
 
 .slider {
-  width: 64px;
-  height: 32px;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 2px solid #aaa;
+  width: 60px;
+  height: 30px;
+  background: #666;
+  border-radius: 30px;
   position: relative;
+  border: 2px solid #888;
   cursor: pointer;
 }
 
@@ -93,157 +83,138 @@ input[type="number"] {
   position: absolute;
   width: 26px;
   height: 26px;
-  top: 1px;
-  left: 1px;
-  background: #e0e0e0;
+  top: 2px;
+  left: 2px;
+  background: #ffffff;
   border-radius: 50%;
-  transition: transform 0.3s, background 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  transition: transform 0.3s;
 }
 
 input:checked + .slider {
-  border-color: #00e5ff;
+  background: #1976d2;
+  border-color: #0d47a1;
 }
 
 input:checked + .slider::before {
-  transform: translateX(32px);
-  background: #00e5ff;
+  transform: translateX(30px);
 }
 
-.result-text {
-  margin-left: 8px;
+/* ★ ON / OFF 文字はどちらも白 */
+.result {
+  min-width: 64px;
+  text-align: right;
   font-weight: bold;
+  color: #ffffff;
 }
 
-.hidden {
-  display: none;
-}
-
+/* ===== 点検 ===== */
 fieldset {
-  margin-top: 24px;
-  padding: 16px;
+  margin: 20px 16px;
+  padding: 12px;
+  background: #111;
   border-radius: 8px;
-  border: 1px solid #555;
+  border: 1px solid #333;
 }
 
+fieldset label {
+  margin: 6px 0;
+  color: #ffffff;
+}
+
+/* ===== ボタン ===== */
 button {
-  width: 100%;
-  margin-top: 24px;
+  margin: 30px 16px 0;
+  width: calc(100% - 32px);
   padding: 14px;
   font-size: 18px;
-  font-weight: bold;
+  background: #1976d2;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  background: #00e5ff;
-  color: #000;
-}
-
-@media (max-width: 480px) {
-  .inline-group {
-    flex-direction: column;
-  }
 }
 </style>
 </head>
 
-<body onload="init()">
+<body>
+
+<form>
 
 <h2>業務の記録</h2>
 
-<form id="form">
+<label>日付</label>
+<input type="date" id="dateInput">
 
-  <div class="inline-group">
-    <div>
-      <label>日付</label>
-      <input type="date" id="date" required>
-    </div>
-    <div>
-      <label>点呼時刻</label>
-      <input type="time" id="time" required>
-    </div>
-  </div>
+<label>点呼時刻</label>
+<input type="time" id="timeInput">
 
-  <div class="toggle">
-    <span>点呼区分</span>
-    <label>
-      <input type="checkbox" id="callToggle">
-      <span class="slider"></span>
-      <span class="result-text" id="callText">業務前</span>
-    </label>
-  </div>
+<div class="toggle">
+  <span>点呼区分</span>
+  <label>
+    <input type="checkbox" id="callToggle">
+    <span class="slider"></span>
+  </label>
+  <span id="callResult" class="result">業務前</span>
+</div>
 
-  <label>走行距離（運行前）</label>
-  <div class="distance-input">
-    <input type="number" id="before">
-    <span class="unit">km</span>
-  </div>
+<label>走行距離（運行前）</label>
+<input type="number">
 
-  <label>走行距離（運行後）</label>
-  <div class="distance-input">
-    <input type="number" id="after">
-    <span class="unit">km</span>
-  </div>
+<label>走行距離（運行後）</label>
+<input type="number">
 
-  <div class="toggle">
-    <span>アルコール検知器</span>
-    <label>
-      <input type="checkbox" id="alcToggle">
-      <span class="slider"></span>
-      <span class="result-text" id="alcText">未使用</span>
-    </label>
-  </div>
+<div class="toggle">
+  <span>アルコール</span>
+  <label>
+    <input type="checkbox" id="alcToggle">
+    <span class="slider"></span>
+  </label>
+  <span id="alcResult" class="result">未使用</span>
+</div>
 
-  <label>アルコール検査値</label>
-  <div class="distance-input">
-    <input type="number" step="0.01">
-    <span class="unit">mg/L</span>
-  </div>
+<label>業務内容</label>
+<textarea rows="3"></textarea>
 
-  <div class="toggle">
-    <span>健康状態</span>
-    <label>
-      <input type="checkbox" id="healthToggle">
-      <span class="slider"></span>
-      <span class="result-text" id="healthText">未確認</span>
-    </label>
-  </div>
+<fieldset>
+  <legend>点検項目</legend>
+  <label><input type="checkbox"> タイヤ</label>
+  <label><input type="checkbox"> 油脂類</label>
+  <label><input type="checkbox"> 灯火類</label>
+  <label><input type="checkbox"> エンジン</label>
+</fieldset>
 
-  <label>業務内容</label>
-  <input type="text" required>
+<button type="button">保存</button>
 
-  <fieldset>
-    <legend>点検項目</legend>
-    <label><input type="checkbox"> タイヤ</label>
-    <label><input type="checkbox"> 油脂類</label>
-    <label><input type="checkbox"> 灯火類</label>
-    <label><input type="checkbox"> エンジン</label>
-  </fieldset>
-
-  <button type="submit">登録を保存する</button>
 </form>
 
 <script>
-function init() {
+/* ===== 日付・時刻 自動入力 ===== */
+window.addEventListener("load", () => {
   const now = new Date();
-  document.getElementById("date").value = now.toISOString().split("T")[0];
-  document.getElementById("time").value =
-    now.getHours().toString().padStart(2,"0") + ":" +
-    now.getMinutes().toString().padStart(2,"0");
-}
 
-callToggle.onchange = () =>
-  callText.textContent = callToggle.checked ? "業務後" : "業務前";
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const min = String(now.getMinutes()).padStart(2, "0");
 
-alcToggle.onchange = () =>
-  alcText.textContent = alcToggle.checked ? "使用" : "未使用";
+  document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
+  document.getElementById("timeInput").value = `${hh}:${min}`;
+});
 
-healthToggle.onchange = () =>
-  healthText.textContent = healthToggle.checked ? "良好" : "未確認";
+/* ===== トグル動作 ===== */
+const callToggle = document.getElementById("callToggle");
+const callResult = document.getElementById("callResult");
 
-form.onsubmit = e => {
-  e.preventDefault();
-  alert("保存しました（デモ）");
-  form.reset();
-  init();
+callToggle.onchange = () => {
+  callResult.textContent = callToggle.checked ? "業務後" : "業務前";
+};
+
+const alcToggle = document.getElementById("alcToggle");
+const alcResult = document.getElementById("alcResult");
+
+alcToggle.onchange = () => {
+  alcResult.textContent = alcToggle.checked ? "使用" : "未使用";
 };
 </script>
 
