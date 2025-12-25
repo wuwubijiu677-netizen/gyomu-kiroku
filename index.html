@@ -90,31 +90,39 @@ input, textarea {
   box-shadow: 0 2px 6px rgba(0,0,0,0.6);
   transition: transform 0.3s;
 }
+/* OFF（白）状態 */
+.toggle {
+  width: 60px;
+  height: 30px;
+  background: #ffffff; /* 白 */
+  border-radius: 30px;
+  position: relative;
+  border: 2px solid #888;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* ノブ（つまみ） */
+.toggle::before {
+  content: "";
+  width: 26px;
+  height: 26px;
+  background: #666;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.3s;
+}
+
 /* ON（赤）状態 */
-.slider.on {
-  background: #ff0000; /* 赤 */
+.toggle.on {
+  background: #ff0000;
 }
 
 /* ON のときノブを右へ移動 */
-.slider.on::before {
+.toggle.on::before {
   left: 32px;
-}
-
-input:checked + .slider {
-background: #1976d2;
- border-color: #0d47a1;
-}
-
-input:checked + .slider::before {
-  transform: translateX(30px);
-}
-
-/* ★ ON / OFF 文字はどちらも白 */
-.result {
-  min-width: 64px;
-  text-align: right;
-  font-weight: bold;
-  color: #ffffff;
 }
 
 /* ===== 点検 ===== */
@@ -157,7 +165,7 @@ button {
 <label>点呼時刻</label>
 <input type="time" id="timeInput">
 
-<div class="slider on"></div>
+<div class="toggle"></div>
   <span>点呼区分</span>
   <label>
     <input type="checkbox" id="callToggle">
@@ -209,6 +217,9 @@ window.addEventListener("load", () => {
 
   document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
   document.getElementById("timeInput").value = `${hh}:${min}`;
+});
+document.querySelector('.toggle').addEventListener('click', function() {
+  this.classList.toggle('on');
 });
 
 /* ===== トグル動作 ===== */
