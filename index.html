@@ -1,249 +1,114 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>業務の記録</title>
+  <meta charset="UTF-8">
+  <title>業務の記録</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<style>
-/* ===== 外側（白） ===== */
-body {
-  margin: 0;
-  background: #ffffff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+  <!-- iOS・Android用アイコン -->
+  <link rel="apple-touch-icon" sizes="180x180" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
+  <link rel="icon" type="image/png" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
 
-/* ===== 内側フォーム（黒） ===== */
-form {
-  max-width: 420px;
-  margin: 0 auto;
-  background: #000000;
-  min-height: 100vh;
-  box-sizing: border-box;
-  padding-bottom: 24px;
-}
+  <!-- PWA風 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#00bcd4">
 
-/* ===== タイトル ===== */
-h2 {
-  margin: 0;
-  padding: 14px 0;
-  text-align: center;
-  background: #000000;
-  color: #ffffff;
-  font-size: 20px;
-  border-bottom: 1px solid #333;
-}
-
-/* ===== ラベル ===== */
-label, legend {
-  display: block;
-  margin: 16px 16px 6px;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-/* ===== 入力 ===== */
-input, textarea {
-  width: calc(100% - 32px);
-  margin: 0 16px;
-  padding: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-  background: #ffffff;
-  color: #000000;
-  border-radius: 4px;
-  border: none;
-}
-
-/* ===== トグル ===== */
-.toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 20px 16px;
-  color: #ffffff;
-}
-
-
-.toggle input {
-  display: none;
-}
-
-.slider {
-  width: 60px;
-  height: 30px;
-  background: #666;
-  border-radius: 30px;
-  position: relative;
-  border: 2px solid #888;
-  cursor: pointer;
-}
-
-.slider::before {
-  content: "";
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  top: 2px;
-  left: 2px;
-  background: #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  transition: transform 0.3s;
-}
-
-input:checked + .slider {
-  background: #1976d2;
-  border-color: #0d47a1;
-}
-
-input:checked + .slider::before {
-  transform: translateX(30px);
-}
-
-/* ★ ON / OFF 文字はどちらも白 */
-.result {
-  min-width: 64px;
-  text-align: right;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-/* ===== 点検 ===== */
-fieldset {
-  margin: 20px 16px;
-  padding: 12px;
-  background: #111;
-  border-radius: 8px;
-  border: 1px solid #333;
-}
-
-fieldset label {
-  margin: 6px 0;
-  color: #ffffff;
-}
-
-/* ===== ボタン ===== */
-button {
-  margin: 30px 16px 0;
-  width: calc(100% - 32px);
-  padding: 14px;
-  font-size: 18px;
-  background: #1976d2;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-}
-  /* ===== トグル ON / OFF 視認性強化（レイアウト不変更） ===== */
-
-.slider {
-  background: #ffffff;
-  border: 2px solid #999;
-}
-
-.slider::before {
-  background: #cccccc;
-}
-
-/* ON 状態 */
-input:checked + .slider {
-  background: #ffffff;
-  border-color: #00e5ff;
-}
-
-input:checked + .slider::before {
-  background: #00e5ff;
-  transform: translateX(30px);
-}
-
-.result-text {
-  font-weight: bold;
-}
-</style>
+  <style>
+    body { font-family: system-ui,-apple-system; background:#f9f9f9; margin:0; }
+    form { max-width:600px; margin:40px auto; background:#fff; padding:24px;
+           border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    label { margin-top:16px; display:block; font-weight:bold; }
+    input { width:100%; padding:10px; font-size:16px; margin-top:4px; }
+    .inline-group { display:flex; gap:16px; }
+    .hidden { display:none; }
+    button { width:100%; margin-top:24px; padding:14px; font-size:18px;
+             background:#00bcd4; color:#fff; border:none; border-radius:8px; }
+  </style>
 </head>
 
-<body>
+<body onload="init()">
+<h2 style="text-align:center;">業務の記録</h2>
 
-<form>
+<form id="form">
 
-<h2>業務の記録</h2>
+  <div class="inline-group">
+    <div>
+      <label>日付</label>
+      <input type="date" id="date" required>
+    </div>
+    <div>
+      <label>点呼時刻</label>
+      <input type="time" id="callTime" required>
+    </div>
+  </div>
 
-<label>日付</label>
-<input type="date" id="dateInput">
-
-<label>点呼時刻</label>
-<input type="time" id="timeInput">
-
-<div class="toggle">
-  <span>点呼区分</span>
   <label>
-    <input type="checkbox" id="callToggle">
-    <span class="slider"></span>
+    <input type="checkbox" id="callTypeToggle">
+    点呼区分：<span id="callTypeResult">業務前</span>
   </label>
-  <span id="callResult" class="result">業務前</span>
-</div>
+  <input type="hidden" id="callTypeHidden" value="業務前">
 
-<label>走行距離（運行前）</label>
-<input type="number">
+  <label>走行距離（運行前）</label>
+  <input type="number" id="distanceBefore">
 
-<label>走行距離（運行後）</label>
-<input type="number">
+  <label class="hidden" id="afterLabel">走行距離（運行後）</label>
+  <input type="number" id="distanceAfter" class="hidden">
 
-<div class="toggle">
-  <span>アルコール検知器の使用の有無</span>
-  <label>
-    <input type="checkbox" id="alcToggle">
-    <span class="slider"></span>
-  </label>
-  <span id="alcResult" class="result">未使用</span>
-</div>
+  <label>業務内容</label>
+  <input type="text" id="workType" required>
 
-<label>業務内容</label>
-<textarea rows="3"></textarea>
-
-<fieldset>
-  <legend>点検項目</legend>
-  <label><input type="checkbox"> タイヤ</label>
-  <label><input type="checkbox"> 油脂類</label>
-  <label><input type="checkbox"> 灯火類</label>
-  <label><input type="checkbox"> エンジン</label>
-</fieldset>
-
-<button type="button">保存</button>
-
+  <button type="submit">登録を保存する</button>
 </form>
 
 <script>
-/* ===== 日付・時刻 自動入力 ===== */
-window.addEventListener("load", () => {
+/************ 設定 ************/
+const GAS_WEBAPP_URL = "ここにGASのWebアプリURL";
+
+/************ 初期化 ************/
+function init() {
   const now = new Date();
+  document.getElementById('date').value =
+    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  document.getElementById('callTime').value =
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+}
 
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const hh = String(now.getHours()).padStart(2, "0");
-  const min = String(now.getMinutes()).padStart(2, "0");
-
-  document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
-  document.getElementById("timeInput").value = `${hh}:${min}`;
+/************ 点呼切替 ************/
+document.getElementById('callTypeToggle').addEventListener('change', e => {
+  const after = e.target.checked;
+  document.getElementById('callTypeResult').textContent = after ? '業務後' : '業務前';
+  document.getElementById('callTypeHidden').value = after ? '業務後' : '業務前';
+  document.getElementById('afterLabel').classList.toggle('hidden', !after);
+  document.getElementById('distanceAfter').classList.toggle('hidden', !after);
 });
 
-/* ===== トグル動作 ===== */
-const callToggle = document.getElementById("callToggle");
-const callResult = document.getElementById("callResult");
+/************ 送信 ************/
+document.getElementById('form').addEventListener('submit', e => {
+  e.preventDefault();
 
-callToggle.onchange = () => {
-  callResult.textContent = callToggle.checked ? "業務後" : "業務前";
-};
+  const data = {
+    date: date.value,
+    callType: callTypeHidden.value,
+    callTime: callTime.value,
+    distanceBefore: distanceBefore.value,
+    distanceAfter: distanceAfter.value,
+    workType: workType.value
+  };
 
-const alcToggle = document.getElementById("alcToggle");
-const alcResult = document.getElementById("alcResult");
-
-alcToggle.onchange = () => {
-  alcResult.textContent = alcToggle.checked ? "使用" : "未使用";
-};
+  fetch(GAS_WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(() => {
+    alert("保存しました");
+    form.reset();
+    init();
+  })
+  .catch(() => alert("保存失敗"));
+});
 </script>
-
 </body>
 </html>
-
