@@ -54,47 +54,17 @@ input, textarea {
   border-radius: 4px;
   border: none;
 }
-
-/* ===== トグル ===== */
+/* ===== トグル（レイアウト） ===== */
 .toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 20px 16px;
   color: #ffffff;
-}
 
-.toggle input {
-  display: none;
-}
-
-.slider {
   width: 60px;
   height: 30px;
-  background: #666;
-  border-radius: 30px;
-  position: relative;
-  border: 2px solid #888;
-  cursor: pointer;
-}
-
-.slider::before {
-  content: "";
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  top: 2px;
-  left: 2px;
-  background: #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  transition: transform 0.3s;
-}
-/* OFF（白）状態 */
-.toggle {
-  width: 60px;
-  height: 30px;
-  background: #ffffff; /* 白 */
+  background: #ffffff; /* OFF は白 */
   border-radius: 30px;
   position: relative;
   border: 2px solid #888;
@@ -107,7 +77,7 @@ input, textarea {
   content: "";
   width: 26px;
   height: 26px;
-  background: #666;
+  background: #666; /* ノブの色 */
   border-radius: 50%;
   position: absolute;
   top: 2px;
@@ -124,6 +94,7 @@ input, textarea {
 .toggle.on::before {
   left: 32px;
 }
+
 
 /* ===== 点検 ===== */
 fieldset {
@@ -218,7 +189,7 @@ window.addEventListener("load", () => {
   document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
   document.getElementById("timeInput").value = `${hh}:${min}`;
 });
-document.querySelector('.toggle').addEventListener('click', function() {
+　document.document.querySelector('.toggle').addEventListene, 'click', f n
   this.classList.toggle('on');
 });
 
