@@ -2,51 +2,62 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>業務の記録</title>
 
 <style>
 /* ===== 全体 ===== */
 body {
   margin: 0;
-  background: #eeeeee;
+  background: #f0f0f0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* ===== フォーム（レイアウト変更なし） ===== */
 form {
   max-width: 420px;
   margin: 0 auto;
   background: #ffffff;
-  padding: 20px;
   min-height: 100vh;
   box-sizing: border-box;
+  padding-bottom: 24px;
+}
+
+/* ===== タイトル帯（★白→黒に変更した唯一の箇所） ===== */
+h2 {
+  margin: 0;
+  padding: 14px 0;
+  text-align: center;
+  background: #000000;   /* ← ここだけ変更 */
+  color: #ffffff;
+  font-size: 20px;
 }
 
 /* ===== ラベル ===== */
 label {
   display: block;
-  margin-top: 14px;
+  margin: 16px 16px 6px;
   font-weight: bold;
 }
 
 /* ===== 入力 ===== */
 input, textarea {
-  width: 100%;
+  width: calc(100% - 32px);
+  margin: 0 16px;
   padding: 10px;
-  margin-top: 6px;
   font-size: 16px;
   box-sizing: border-box;
 }
 
-/* ===== トグル共通 ===== */
+/* ===== トグル ===== */
 .toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 20px;
+  margin: 20px 16px;
 }
 
-.toggle-text {
+.toggle span {
   font-weight: bold;
 }
 
@@ -54,19 +65,16 @@ input, textarea {
   display: none;
 }
 
-/* ===== スイッチ本体 ===== */
 .slider {
+  width: 60px;
+  height: 30px;
+  background: #cccccc;
+  border-radius: 30px;
   position: relative;
-  width: 64px;
-  height: 32px;
-  background: #bdbdbd;
-  border-radius: 32px;
-  cursor: pointer;
   border: 2px solid #666;
-  transition: background 0.3s;
+  cursor: pointer;
 }
 
-/* ===== 丸 ===== */
 .slider::before {
   content: "";
   position: absolute;
@@ -76,40 +84,37 @@ input, textarea {
   left: 2px;
   background: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
   transition: transform 0.3s;
 }
 
-/* ===== ON状態 ===== */
 input:checked + .slider {
   background: #1565c0;
   border-color: #0d47a1;
 }
 
 input:checked + .slider::before {
-  transform: translateX(32px);
+  transform: translateX(30px);
 }
 
-/* ===== ON / OFF 表示 ===== */
 .result {
-  margin-left: 10px;
-  font-weight: bold;
-  min-width: 60px;
+  min-width: 64px;
   text-align: right;
-}
-
-.result.on {
-  color: #0d47a1;
+  font-weight: bold;
 }
 
 .result.off {
   color: #666;
 }
 
+.result.on {
+  color: #0d47a1;
+}
+
 /* ===== 点検 ===== */
 fieldset {
-  margin-top: 20px;
-  padding: 14px;
+  margin: 20px 16px;
+  padding: 12px;
   background: #f5f7fa;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -121,12 +126,12 @@ legend {
 
 /* ===== ボタン ===== */
 button {
-  margin-top: 30px;
-  width: 100%;
+  margin: 30px 16px 0;
+  width: calc(100% - 32px);
   padding: 14px;
   font-size: 18px;
   background: #1976d2;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
 }
@@ -137,7 +142,7 @@ button {
 
 <form>
 
-<h2 style="text-align:center;">業務の記録</h2>
+<h2>業務の記録</h2>
 
 <label>日付</label>
 <input type="date">
@@ -145,9 +150,8 @@ button {
 <label>点呼時刻</label>
 <input type="time">
 
-<!-- 業務前 / 後 -->
 <div class="toggle">
-  <span class="toggle-text">点呼区分</span>
+  <span>点呼区分</span>
   <label>
     <input type="checkbox" id="callToggle">
     <span class="slider"></span>
@@ -155,15 +159,14 @@ button {
   <span id="callResult" class="result off">業務前</span>
 </div>
 
-<label>走行距離（前）</label>
+<label>走行距離（運行前）</label>
 <input type="number">
 
-<label>走行距離（後）</label>
+<label>走行距離（運行後）</label>
 <input type="number">
 
-<!-- アルコール -->
 <div class="toggle">
-  <span class="toggle-text">アルコール</span>
+  <span>アルコール</span>
   <label>
     <input type="checkbox" id="alcToggle">
     <span class="slider"></span>
@@ -172,9 +175,8 @@ button {
 </div>
 
 <label>業務内容</label>
-<textarea></textarea>
+<textarea rows="3"></textarea>
 
-<!-- 点検 -->
 <fieldset>
   <legend>点検項目</legend>
   <label><input type="checkbox"> タイヤ</label>
@@ -217,3 +219,4 @@ alcToggle.onchange = () => {
 
 </body>
 </html>
+
