@@ -18,9 +18,10 @@
       gap:24px;
     }
     .inline-group input {
-      width:100%;
-      padding:12px;
-      font-size:16px;
+      width:85%;          /* 横幅短く */
+      height:32px;        /* 高さ小さく */
+      padding:4px 6px;    /* 余白小さく */
+      font-size:16px;     /* フォントサイズは変更しない */
     }
 
     .hidden { display:none; }
@@ -96,12 +97,17 @@
   </div>
   <input type="hidden" id="callTypeHidden" value="業務前">
 
-  <!-- 走行距離 -->
-  <label>走行距離（運行前）</label>
+  <!-- 走行距離（業務前のみ） -->
+  <label id="beforeLabel">走行距離（運行前）</label>
   <input type="number" id="distanceBefore">
 
-  <label class="hidden" id="afterLabel">走行距離（運行後）</label>
+  <!-- 業務後：走行距離計（運行後） -->
+  <label class="hidden" id="afterLabel">走行距離計（運行後）</label>
   <input type="number" id="distanceAfter" class="hidden">
+
+  <!-- 業務後：当日の総走行距離計 -->
+  <label class="hidden" id="totalDistanceLabel">当日の総走行距離計</label>
+  <input type="number" id="totalDistance" class="hidden">
 
   <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
@@ -123,12 +129,6 @@
       <span>体調確認</span>
       <div><label class="switch"><input type="checkbox" id="conditionBefore"><span class="slider"></span></label>
       <span id="conditionBeforeStatus">良好</span></div>
-    </div>
-
-    <div class="check-item">
-      <span>車両点検（灯火類・タイヤ・ブレーキ）</span>
-      <div><label class="switch"><input type="checkbox" id="vehicleCheckBefore"><span class="slider"></span></label>
-      <span id="vehicleCheckBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
@@ -162,9 +162,15 @@
     </div>
   </div>
 
-  <!-- 業務後 点検項目 -->
+  <!-- 業務後 点検項目（順番統一） -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
+
+    <div class="check-item">
+      <span>アルコール検知器の使用の有無</span>
+      <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
+      <span id="alcoholAfterStatus">未使用</span></div>
+    </div>
 
     <div class="check-item">
       <span>車両異常確認</span>
@@ -173,9 +179,9 @@
     </div>
 
     <div class="check-item">
-      <span>アルコール検知器の使用の有無</span>
-      <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
-      <span id="alcoholAfterStatus">未使用</span></div>
+      <span>体調確認</span>
+      <div><label class="switch"><input type="checkbox" id="conditionAfter"><span class="slider"></span></label>
+      <span id="conditionAfterStatus">良好</span></div>
     </div>
 
     <div class="check-item">
@@ -185,9 +191,9 @@
     </div>
 
     <div class="check-item">
-      <span>体調確認</span>
-      <div><label class="switch"><input type="checkbox" id="conditionAfter"><span class="slider"></span></label>
-      <span id="conditionAfterStatus">良好</span></div>
+      <span>免許証携帯確認</span>
+      <div><label class="switch"><input type="checkbox" id="licenseAfter"><span class="slider"></span></label>
+      <span id="licenseAfterStatus">携帯</span></div>
     </div>
 
     <div class="check-item">
@@ -226,14 +232,20 @@ callTypeToggle.addEventListener("change", e => {
   callTypeResult.textContent = after ? "業務後" : "業務前";
   callTypeHidden.value = after ? "業務後" : "業務前";
 
+  beforeLabel.classList.toggle("hidden", after);
+  distanceBefore.classList.toggle("hidden", after);
+
   afterLabel.classList.toggle("hidden", !after);
   distanceAfter.classList.toggle("hidden", !after);
+
+  totalDistanceLabel.classList.toggle("hidden", !after);
+  totalDistance.classList.toggle("hidden", !after);
 
   checklistBefore.classList.toggle("hidden", after);
   checklistAfter.classList.toggle("hidden", !after);
 });
 
-/* 状態切替 */
+/* 状態切替（反転版） */
 function bindStatus(toggleId, statusId, onText, offText) {
   document.getElementById(toggleId).addEventListener("change", e => {
     document.getElementById(statusId).textContent =
@@ -242,26 +254,26 @@ function bindStatus(toggleId, statusId, onText, offText) {
 }
 
 /* 業務前 */
-bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
-bindStatus("vehicleBefore", "vehicleBeforeStatus", "異常", "正常");
-bindStatus("conditionBefore", "conditionBeforeStatus", "不調", "良好");
-bindStatus("vehicleCheckBefore", "vehicleCheckBeforeStatus", "異常", "正常");
-bindStatus("drunkBefore", "drunkBeforeStatus", "有", "無");
-bindStatus("licenseBefore", "licenseBeforeStatus", "不携帯", "携帯");
-bindStatus("tireBefore", "tireBeforeStatus", "異常", "正常");
-bindStatus("lightBefore", "lightBeforeStatus", "異常", "正常");
-bindStatus("oilBefore", "oilBeforeStatus", "異常", "正常");
+bindStatus("alcoholBefore", "alcoholBeforeStatus", "未使用", "使用");
+bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
+bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
+bindStatus("drunkBefore", "drunkBeforeStatus", "無", "有");
+bindStatus("licenseBefore", "licenseBeforeStatus", "携帯", "不携帯");
+bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
+bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
+bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
 
 /* 業務後 */
-bindStatus("vehicleAfter", "vehicleAfterStatus", "異常", "正常");
-bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
-bindStatus("drunkAfter", "drunkAfterStatus", "有", "無");
-bindStatus("conditionAfter", "conditionAfterStatus", "不調", "良好");
-bindStatus("tireAfter", "tireAfterStatus", "異常", "正常");
-bindStatus("lightAfter", "lightAfterStatus", "異常", "正常");
-bindStatus("oilAfter", "oilAfterStatus", "異常", "正常");
+bindStatus("alcoholAfter", "alcoholAfterStatus", "未使用", "使用");
+bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
+bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
+bindStatus("drunkAfter", "drunkAfterStatus", "無", "有");
+bindStatus("licenseAfter", "licenseAfterStatus", "携帯", "不携帯");
+bindStatus("tireAfter", "tireAfterStatus", "正常", "異常");
+bindStatus("lightAfter", "lightAfterStatus", "正常", "異常");
+bindStatus("oilAfter", "oilAfterStatus", "正常", "異常");
 
-/* 送信（点検項目も含める） */
+/* 送信（点検項目＋総走行距離） */
 form.addEventListener("submit", e => {
   e.preventDefault();
 
@@ -269,7 +281,6 @@ form.addEventListener("submit", e => {
     alcoholBefore: alcoholBeforeStatus.textContent,
     vehicleBefore: vehicleBeforeStatus.textContent,
     conditionBefore: conditionBeforeStatus.textContent,
-    vehicleCheckBefore: vehicleCheckBeforeStatus.textContent,
     drunkBefore: drunkBeforeStatus.textContent,
     licenseBefore: licenseBeforeStatus.textContent,
     tireBefore: tireBeforeStatus.textContent,
@@ -280,6 +291,7 @@ form.addEventListener("submit", e => {
     vehicleAfter: vehicleAfterStatus.textContent,
     conditionAfter: conditionAfterStatus.textContent,
     drunkAfter: drunkAfterStatus.textContent,
+    licenseAfter: licenseAfterStatus.textContent,
     tireAfter: tireAfterStatus.textContent,
     lightAfter: lightAfterStatus.textContent,
     oilAfter: oilAfterStatus.textContent
@@ -291,6 +303,7 @@ form.addEventListener("submit", e => {
     callTime: callTime.value,
     distanceBefore: distanceBefore.value,
     distanceAfter: distanceAfter.value,
+    totalDistance: totalDistance.value,
     checklist: checklist
   };
 
