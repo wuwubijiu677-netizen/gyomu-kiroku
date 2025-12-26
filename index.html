@@ -242,15 +242,16 @@ function bindStatus(toggleId, statusId, onText, offText) {
 }
 
 /* 業務前 */
-bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
+bindStatus("alcoholBefore", "alcoholBeforeStatus", "未使用", "使用");
 bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
 bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
 bindStatus("vehicleCheckBefore", "vehicleCheckBeforeStatus", "正常", "異常");
 bindStatus("drunkBefore", "drunkBeforeStatus", "無", "有");
 bindStatus("licenseBefore", "licenseBeforeStatus", "携帯", "不携帯");
 bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
-bindStatus("lightBefore", "lightBeforeStatus", "異常", "正常");
-bindStatus("oilBefore", "oilBeforeStatus", "異常", "正常");
+bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
+bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
+
 
 /* 業務後 */
 bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
@@ -260,6 +261,7 @@ bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
 bindStatus("tireAfter", "tireAfterStatus", "正常", "異常");
 bindStatus("lightAfter", "lightAfterStatus", "正常", "異常");
 bindStatus("oilAfter", "oilAfterStatus", "正常", "異常");
+
 
 
 /* 送信（点検項目も含める） */
