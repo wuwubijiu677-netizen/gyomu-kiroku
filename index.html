@@ -68,6 +68,21 @@
       font-weight: bold;
       margin-left: 8px;
     }
+    /* スマホ最適化 */
+@media (max-width: 480px) {
+  form {
+    margin: 20px;
+    padding: 18px;
+  }
+  .check-item {
+    font-size: 15px;
+    padding: 6px 0;
+  }
+  .switch {
+    transform: scale(0.9);
+  }
+}
+
   </style>
 </head>
 
@@ -111,21 +126,29 @@
   <div id="checklistBefore">
     <label>点検項目（業務前）</label>
 
-    <div class="check-item">
-      <span>アルコール検知器の使用の有無</span>
-      <label class="switch">
-        <input type="checkbox" name="before" value="アルコール検知器の使用の有無">
-        <span class="slider"></span>
-      </label>
-    </div>
+   <div class="check-item">
+  <span>アルコール検知器の使用の有無</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="alcoholToggle">
+      <span class="slider"></span>
+    </label>
+    <span id="alcoholStatus">未使用</span>
+  </div>
+</div>
+
 
     <div class="check-item">
-      <span>体調確認（良好・不調）</span>
-      <label class="switch">
-        <input type="checkbox" name="before" value="体調確認（良好・不調）">
-        <span class="slider"></span>
-      </label>
-    </div>
+  <span>体調確認（良好・不調）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="conditionToggle">
+      <span class="slider"></span>
+    </label>
+    <span id="conditionStatus">良好</span>
+  </div>
+</div>
+
 
     <div class="check-item">
       <span>車両点検（灯火類・タイヤ・ブレーキ）</span>
@@ -136,12 +159,16 @@
     </div>
 
     <div class="check-item">
-      <span>酒気帯びの有無</span>
-      <label class="switch">
-        <input type="checkbox" name="before" value="酒気帯びの有無">
-        <span class="slider"></span>
-      </label>
-    </div>
+  <span>酒気帯びの有無</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="alcoholLevelToggle">
+      <span class="slider"></span>
+    </label>
+    <span id="alcoholLevelStatus">なし</span>
+  </div>
+</div>
+
 
     <div class="check-item">
       <span>免許証携帯確認</span>
@@ -235,6 +262,24 @@ document.getElementById('form').addEventListener('submit', e => {
   })
   .catch(() => alert("保存失敗"));
 });
+ // アルコール検知器の使用の有無
+document.getElementById("alcoholToggle").addEventListener("change", e => {
+  document.getElementById("alcoholStatus").textContent =
+    e.target.checked ? "使用" : "未使用";
+});
+
+// 体調確認（良好・不調）
+document.getElementById("conditionToggle").addEventListener("change", e => {
+  document.getElementById("conditionStatus").textContent =
+    e.target.checked ? "不調" : "良好";
+});
+
+// 酒気帯びの有無
+document.getElementById("alcoholLevelToggle").addEventListener("change", e => {
+  document.getElementById("alcoholLevelStatus").textContent =
+    e.target.checked ? "あり" : "なし";
+});
+ 
 </script>
 </body>
 </html>
