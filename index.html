@@ -179,6 +179,40 @@
     </div>
   </div>
 
+<div class="check-item">
+  <span>タイヤ（亀裂・空気圧・摩耗）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="tireToggleBefore">
+      <span class="slider"></span>
+    </label>
+    <span id="tireStatusBefore">正常</span>
+  </div>
+</div>
+
+<div class="check-item">
+  <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="lightToggleBefore">
+      <span class="slider"></span>
+    </label>
+    <span id="lightStatusBefore">正常</span>
+  </div>
+</div>
+
+<div class="check-item">
+  <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="oilToggleBefore">
+      <span class="slider"></span>
+    </label>
+    <span id="oilStatusBefore">正常</span>
+  </div>
+</div>
+
+  
   <!-- 点検項目（業務後） -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
@@ -208,6 +242,40 @@
     </div>
   </div>
 
+  <div class="check-item">
+  <span>タイヤ（亀裂・空気圧・摩耗）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="tireToggleAfter">
+      <span class="slider"></span>
+    </label>
+    <span id="tireStatusAfter">正常</span>
+  </div>
+</div>
+
+<div class="check-item">
+  <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="lightToggleAfter">
+      <span class="slider"></span>
+    </label>
+    <span id="lightStatusAfter">正常</span>
+  </div>
+</div>
+
+<div class="check-item">
+  <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <label class="switch">
+      <input type="checkbox" id="oilToggleAfter">
+      <span class="slider"></span>
+    </label>
+    <span id="oilStatusAfter">正常</span>
+  </div>
+</div>
+
+  
   <button type="submit">登録を保存する</button>
 </form>
 
@@ -279,7 +347,26 @@ document.getElementById("alcoholLevelToggle").addEventListener("change", e => {
   document.getElementById("alcoholLevelStatus").textContent =
     e.target.checked ? "有" : "無";
 });
- 
+
+// 共通関数：ON/OFFで正常/異常を切り替える
+function bindStatus(toggleId, statusId) {
+  document.getElementById(toggleId).addEventListener("change", e => {
+    document.getElementById(statusId).textContent =
+      e.target.checked ? "異常" : "正常";
+  });
+}
+
+// 業務前
+bindStatus("tireToggleBefore", "tireStatusBefore");
+bindStatus("lightToggleBefore", "lightStatusBefore");
+bindStatus("oilToggleBefore", "oilStatusBefore");
+
+// 業務後
+bindStatus("tireToggleAfter", "tireStatusAfter");
+bindStatus("lightToggleAfter", "lightStatusAfter");
+bindStatus("oilToggleAfter", "oilStatusAfter");
+
+  
 </script>
 </body>
 </html>
