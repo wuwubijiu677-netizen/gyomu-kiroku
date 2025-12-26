@@ -125,7 +125,10 @@
       <span id="conditionBeforeStatus">良好</span></div>
     </div>
 
-    
+    <div class="check-item">
+      <span>車両点検（灯火類・タイヤ・ブレーキ）</span>
+      <div><label class="switch"><input type="checkbox" id="vehicleCheckBefore"><span class="slider"></span></label>
+      <span id="vehicleCheckBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
@@ -162,26 +165,31 @@
   <!-- 業務後 点検項目 -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
- <div class="check-item">
-      <span>アルコール検知器の使用の有無</span>
-      <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
-      <span id="alcoholAfterStatus">未使用</span></div>
-    </div>
+
     <div class="check-item">
       <span>車両異常確認</span>
       <div><label class="switch"><input type="checkbox" id="vehicleAfter"><span class="slider"></span></label>
       <span id="vehicleAfterStatus">正常</span></div>
     </div>
+
+    <div class="check-item">
+      <span>アルコール検知器の使用の有無</span>
+      <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
+      <span id="alcoholAfterStatus">未使用</span></div>
+    </div>
+
+    <div class="check-item">
+      <span>酒気帯びの有無</span>
+      <div><label class="switch"><input type="checkbox" id="drunkAfter"><span class="slider"></span></label>
+      <span id="drunkAfterStatus">無</span></div>
+    </div>
+
     <div class="check-item">
       <span>体調確認</span>
       <div><label class="switch"><input type="checkbox" id="conditionAfter"><span class="slider"></span></label>
       <span id="conditionAfterStatus">良好</span></div>
     </div>
-  　<div class="check-item">
-      <span>酒気帯びの有無</span>
-      <div><label class="switch"><input type="checkbox" id="drunkAfter"><span class="slider"></span></label>
-      <span id="drunkAfterStatus">無</span></div>
-    </div>
+
     <div class="check-item">
       <span>タイヤ（亀裂・空気圧・摩耗）</span>
       <div><label class="switch"><input type="checkbox" id="tireAfter"><span class="slider"></span></label>
@@ -235,14 +243,14 @@ function bindStatus(toggleId, statusId, onText, offText) {
 
 /* 業務前 */
 bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
-bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
-bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
-bindStatus("vehicleCheckBefore", "vehicleCheckBeforeStatus", "正常", "異常");
-bindStatus("drunkBefore", "drunkBeforeStatus", "無", "有");
-bindStatus("licenseBefore", "licenseBeforeStatus", "携帯", "不携帯");
-bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
-bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
-bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
+bindStatus("vehicleBefore", "vehicleBeforeStatus", "異常", "正常");
+bindStatus("conditionBefore", "conditionBeforeStatus", "不調", "良好");
+bindStatus("vehicleCheckBefore", "vehicleCheckBeforeStatus", "異常", "正常");
+bindStatus("drunkBefore", "drunkBeforeStatus", "有", "無");
+bindStatus("licenseBefore", "licenseBeforeStatus", "不携帯", "携帯");
+bindStatus("tireBefore", "tireBeforeStatus", "異常", "正常");
+bindStatus("lightBefore", "lightBeforeStatus", "異常", "正常");
+bindStatus("oilBefore", "oilBeforeStatus", "異常", "正常");
 
 /* 業務後 */
 bindStatus("vehicleAfter", "vehicleAfterStatus", "異常", "正常");
