@@ -5,23 +5,30 @@
   <title>業務の記録</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <link rel="apple-touch-icon" sizes="180x180" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
-  <link rel="icon" type="image/png" href="https://aqua-drop.github.io/assets/311-banchi-icon.png">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#00bcd4">
-
   <style>
     body { font-family: system-ui,-apple-system; background:#f9f9f9; margin:0; }
     form { max-width:600px; margin:40px auto; background:#fff; padding:24px;
            border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+
     label { margin-top:16px; display:block; font-weight:bold; }
-    input { width:100%; padding:10px; font-size:16px; margin-top:4px; }
-    .inline-group { display:flex; gap:16px; }
+
+    /* 日付と点呼時刻のレイアウト調整 */
+    .inline-group {
+      display:flex;
+      gap:24px;
+    }
+    .inline-group input {
+      width:100%;
+      padding:12px;
+      font-size:16px;
+    }
+
     .hidden { display:none; }
-    button { width:100%; margin-top:24px; padding:14px; font-size:18px;
-             background:#00bcd4; color:#fff; border:none; border-radius:8px; }
+
+    button {
+      width:100%; margin-top:24px; padding:14px; font-size:18px;
+      background:#00bcd4; color:#fff; border:none; border-radius:8px;
+    }
 
     .check-item {
       display:flex;
@@ -40,33 +47,23 @@
     }
     .switch input { display:none; }
     .slider {
-      position:absolute;
-      cursor:pointer;
+      position:absolute; cursor:pointer;
       top:0; left:0; right:0; bottom:0;
-      background-color:#ccc;
-      border-radius:34px;
-      transition:.3s;
+      background-color:#ccc; border-radius:34px; transition:.3s;
     }
     .slider:before {
-      position:absolute;
-      content:"";
+      position:absolute; content:"";
       height:22px; width:22px;
       left:3px; bottom:3px;
-      background:white;
-      border-radius:50%;
-      transition:.3s;
+      background:white; border-radius:50%; transition:.3s;
     }
-    .switch input:checked + .slider {
-      background-color:#00bcd4;
-    }
-    .switch input:checked + .slider:before {
-      transform:translateX(24px);
-    }
+    .switch input:checked + .slider { background-color:#00bcd4; }
+    .switch input:checked + .slider:before { transform:translateX(24px); }
 
     @media (max-width:480px) {
       form { margin:20px; padding:18px; }
-      .check-item { font-size:15px; padding:6px 0; }
-      .switch { transform:scale(0.9); }
+      .inline-group { flex-direction:column; gap:12px; }
+      .check-item { font-size:15px; }
     }
   </style>
 </head>
@@ -76,12 +73,13 @@
 
 <form id="form">
 
+  <!-- 日付 & 点呼時刻 -->
   <div class="inline-group">
-    <div>
+    <div style="flex:1;">
       <label>日付</label>
       <input type="date" id="date" required>
     </div>
-    <div>
+    <div style="flex:1;">
       <label>点呼時刻</label>
       <input type="time" id="callTime" required>
     </div>
@@ -98,14 +96,12 @@
   </div>
   <input type="hidden" id="callTypeHidden" value="業務前">
 
+  <!-- 走行距離 -->
   <label>走行距離（運行前）</label>
   <input type="number" id="distanceBefore">
 
   <label class="hidden" id="afterLabel">走行距離（運行後）</label>
   <input type="number" id="distanceAfter" class="hidden">
-
-  <label>業務内容</label>
-  <input type="text" id="workType" required>
 
   <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
@@ -113,101 +109,56 @@
 
     <div class="check-item">
       <span>アルコール検知器の使用の有無</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="alcoholToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="alcoholStatusBefore">未使用</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="alcoholBefore"><span class="slider"></span></label>
+      <span id="alcoholBeforeStatus">未使用</span></div>
     </div>
 
     <div class="check-item">
       <span>車両異常確認</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="vehicleToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="vehicleStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="vehicleBefore"><span class="slider"></span></label>
+      <span id="vehicleBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>体調確認</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="conditionToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="conditionStatusBefore">良好</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="conditionBefore"><span class="slider"></span></label>
+      <span id="conditionBeforeStatus">良好</span></div>
     </div>
 
     <div class="check-item">
       <span>車両点検（灯火類・タイヤ・ブレーキ）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="vehicleCheckToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="vehicleCheckStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="vehicleCheckBefore"><span class="slider"></span></label>
+      <span id="vehicleCheckBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>酒気帯びの有無</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="drunkToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="drunkStatusBefore">なし</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="drunkBefore"><span class="slider"></span></label>
+      <span id="drunkBeforeStatus">無</span></div>
     </div>
 
     <div class="check-item">
       <span>免許証携帯確認</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="licenseToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="licenseStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="licenseBefore"><span class="slider"></span></label>
+      <span id="licenseBeforeStatus">携帯</span></div>
     </div>
 
     <div class="check-item">
       <span>タイヤ（亀裂・空気圧・摩耗）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="tireToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="tireStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="tireBefore"><span class="slider"></span></label>
+      <span id="tireBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="lightToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="lightStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="lightBefore"><span class="slider"></span></label>
+      <span id="lightBeforeStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="oilToggleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="oilStatusBefore">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="oilBefore"><span class="slider"></span></label>
+      <span id="oilBeforeStatus">正常</span></div>
     </div>
   </div>
 
@@ -217,79 +168,44 @@
 
     <div class="check-item">
       <span>車両異常確認</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="vehicleToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="vehicleStatusAfter">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="vehicleAfter"><span class="slider"></span></label>
+      <span id="vehicleAfterStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>アルコール検知器の使用の有無</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="alcoholToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="alcoholStatusAfter">未使用</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
+      <span id="alcoholAfterStatus">未使用</span></div>
     </div>
 
     <div class="check-item">
       <span>酒気帯びの有無</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="drunkToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="drunkStatusAfter">無</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="drunkAfter"><span class="slider"></span></label>
+      <span id="drunkAfterStatus">無</span></div>
     </div>
 
     <div class="check-item">
       <span>体調確認</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="conditionToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="conditionStatusAfter">良好</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="conditionAfter"><span class="slider"></span></label>
+      <span id="conditionAfterStatus">良好</span></div>
     </div>
 
     <div class="check-item">
       <span>タイヤ（亀裂・空気圧・摩耗）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="tireToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="tireStatusAfter">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="tireAfter"><span class="slider"></span></label>
+      <span id="tireAfterStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="lightToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="lightStatusAfter">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="lightAfter"><span class="slider"></span></label>
+      <span id="lightAfterStatus">正常</span></div>
     </div>
 
     <div class="check-item">
       <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label class="switch">
-          <input type="checkbox" id="oilToggleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="oilStatusAfter">正常</span>
-      </div>
+      <div><label class="switch"><input type="checkbox" id="oilAfter"><span class="slider"></span></label>
+      <span id="oilAfterStatus">正常</span></div>
     </div>
   </div>
 
@@ -317,7 +233,7 @@ callTypeToggle.addEventListener("change", e => {
   checklistAfter.classList.toggle("hidden", !after);
 });
 
-/* 状態切替（正常/異常・使用/未使用など） */
+/* 状態切替 */
 function bindStatus(toggleId, statusId, onText, offText) {
   document.getElementById(toggleId).addEventListener("change", e => {
     document.getElementById(statusId).textContent =
@@ -326,28 +242,48 @@ function bindStatus(toggleId, statusId, onText, offText) {
 }
 
 /* 業務前 */
-bindStatus("alcoholToggleBefore", "alcoholStatusBefore", "使用", "未使用");
-bindStatus("vehicleToggleBefore", "vehicleStatusBefore", "異常", "正常");
-bindStatus("conditionToggleBefore", "conditionStatusBefore", "不調", "良好");
-bindStatus("vehicleCheckToggleBefore", "vehicleCheckStatusBefore", "異常", "正常");
-bindStatus("drunkToggleBefore", "drunkStatusBefore", "あり", "なし");
-bindStatus("licenseToggleBefore", "licenseStatusBefore", "異常", "正常");
-bindStatus("tireToggleBefore", "tireStatusBefore", "異常", "正常");
-bindStatus("lightToggleBefore", "lightStatusBefore", "異常", "正常");
-bindStatus("oilToggleBefore", "oilStatusBefore", "異常", "正常");
+bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
+bindStatus("vehicleBefore", "vehicleBeforeStatus", "異常", "正常");
+bindStatus("conditionBefore", "conditionBeforeStatus", "不調", "良好");
+bindStatus("vehicleCheckBefore", "vehicleCheckBeforeStatus", "異常", "正常");
+bindStatus("drunkBefore", "drunkBeforeStatus", "有", "無");
+bindStatus("licenseBefore", "licenseBeforeStatus", "不携帯", "携帯");
+bindStatus("tireBefore", "tireBeforeStatus", "異常", "正常");
+bindStatus("lightBefore", "lightBeforeStatus", "異常", "正常");
+bindStatus("oilBefore", "oilBeforeStatus", "異常", "正常");
 
 /* 業務後 */
-bindStatus("vehicleToggleAfter", "vehicleStatusAfter", "異常", "正常");
-bindStatus("alcoholToggleAfter", "alcoholStatusAfter", "使用", "未使用");
-bindStatus("drunkToggleAfter", "drunkStatusAfter", "有", "無");
-bindStatus("conditionToggleAfter", "conditionStatusAfter", "不調", "良好");
-bindStatus("tireToggleAfter", "tireStatusAfter", "異常", "正常");
-bindStatus("lightToggleAfter", "lightStatusAfter", "異常", "正常");
-bindStatus("oilToggleAfter", "oilStatusAfter", "異常", "正常");
+bindStatus("vehicleAfter", "vehicleAfterStatus", "異常", "正常");
+bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
+bindStatus("drunkAfter", "drunkAfterStatus", "有", "無");
+bindStatus("conditionAfter", "conditionAfterStatus", "不調", "良好");
+bindStatus("tireAfter", "tireAfterStatus", "異常", "正常");
+bindStatus("lightAfter", "lightAfterStatus", "異常", "正常");
+bindStatus("oilAfter", "oilAfterStatus", "異常", "正常");
 
-/* 送信 */
+/* 送信（点検項目も含める） */
 form.addEventListener("submit", e => {
   e.preventDefault();
+
+  const checklist = {
+    alcoholBefore: alcoholBeforeStatus.textContent,
+    vehicleBefore: vehicleBeforeStatus.textContent,
+    conditionBefore: conditionBeforeStatus.textContent,
+    vehicleCheckBefore: vehicleCheckBeforeStatus.textContent,
+    drunkBefore: drunkBeforeStatus.textContent,
+    licenseBefore: licenseBeforeStatus.textContent,
+    tireBefore: tireBeforeStatus.textContent,
+    lightBefore: lightBeforeStatus.textContent,
+    oilBefore: oilBeforeStatus.textContent,
+
+    alcoholAfter: alcoholAfterStatus.textContent,
+    vehicleAfter: vehicleAfterStatus.textContent,
+    conditionAfter: conditionAfterStatus.textContent,
+    drunkAfter: drunkAfterStatus.textContent,
+    tireAfter: tireAfterStatus.textContent,
+    lightAfter: lightAfterStatus.textContent,
+    oilAfter: oilAfterStatus.textContent
+  };
 
   const data = {
     date: date.value,
@@ -355,12 +291,21 @@ form.addEventListener("submit", e => {
     callTime: callTime.value,
     distanceBefore: distanceBefore.value,
     distanceAfter: distanceAfter.value,
-    workType: workType.value
+    checklist: checklist
   };
 
-  alert("保存しました");
-  form.reset();
-  init();
+  fetch("GAS_WEBAPP_URL", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(() => {
+    alert("保存しました");
+    form.reset();
+    init();
+  })
+  .catch(() => alert("保存失敗"));
 });
 </script>
 
