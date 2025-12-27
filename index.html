@@ -16,20 +16,20 @@
       max-width:600px;
       margin:40px auto;
       background:#fff;
-      padding:24px;
+      padding:20px;
       border-radius:12px;
       box-shadow:0 4px 12px rgba(0,0,0,.1);
     }
 
     label {
-      margin-top:16px;
+      margin-top:12px;
       display:block;
       font-weight:bold;
     }
 
     .inline-group {
       display:flex;
-      gap:24px;
+      gap:20px;
     }
 
     .inline-group input {
@@ -52,17 +52,18 @@
       border-radius:8px;
     }
 
-    /* ★ 新レイアウト：ステータス（右上） → 項目名＋トグル（同じ行） */
+    /* --- 超コンパクト最適化版（実画面調整済み） --- */
+
     .check-item {
-      padding:16px 0;
+      padding:6px 0;
       border-bottom:1px solid #eee;
     }
 
     .right-block {
       display:flex;
       flex-direction:column;
-      align-items:flex-end; /* ステータスとトグルを右寄せ */
-      gap:6px;
+      align-items:flex-end;
+      gap:2px;
     }
 
     .row {
@@ -70,23 +71,24 @@
       justify-content:space-between;
       align-items:center;
       width:100%;
+      margin:0;
     }
 
     .label-text {
-      font-size:16px;
+      font-size:13px;
     }
 
     .status-text {
       font-weight:bold;
-      font-size:15px;
+      font-size:12px;
     }
 
-    /* トグルスイッチ */
+    /* トグルスイッチ（小型化） */
     .switch {
       position:relative;
       display:inline-block;
-      width:52px;
-      height:28px;
+      width:40px;
+      height:20px;
     }
 
     .switch input { display:none; }
@@ -103,10 +105,10 @@
     .slider:before {
       position:absolute;
       content:"";
-      height:22px;
-      width:22px;
-      left:3px;
-      bottom:3px;
+      height:16px;
+      width:16px;
+      left:2px;
+      bottom:2px;
       background:white;
       border-radius:50%;
       transition:.3s;
@@ -117,13 +119,19 @@
     }
 
     .switch input:checked + .slider:before {
-      transform:translateX(24px);
+      transform:translateX(20px);
     }
 
+    /* スマホ最適化 */
     @media (max-width:480px) {
-      form { margin:20px; padding:18px; }
-      .inline-group { flex-direction:column; gap:12px; }
-      .label-text { font-size:15px; }
+      .label-text { font-size:12px; }
+      .status-text { font-size:11px; }
+
+      .switch { width:36px; height:18px; }
+      .slider:before { height:14px; width:14px; }
+      .switch input:checked + .slider:before {
+        transform:translateX(18px);
+      }
     }
   </style>
 </head>
@@ -155,9 +163,134 @@
     </label>
     <span id="callTypeResult" style="font-weight:bold;">業務前</span>
   </div>
+  <!-- 業務前 点検項目 -->
+  <div id="checklistBefore">
+    <label>点検項目（業務前）</label>
+
+    <!-- 1 アルコール検知器 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="alcoholBeforeStatus">使用</span>
+
+        <div class="row">
+          <span class="label-text">アルコール検知器の使用の有無</span>
+          <label class="switch">
+            <input type="checkbox" id="alcoholBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 車両異常確認 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="vehicleBeforeStatus">正常</span>
+
+        <div class="row">
+          <span class="label-text">車両異常確認</span>
+          <label class="switch">
+            <input type="checkbox" id="vehicleBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 体調確認 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="conditionBeforeStatus">良好</span>
+
+        <div class="row">
+          <span class="label-text">体調確認</span>
+          <label class="switch">
+            <input type="checkbox" id="conditionBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 酒気帯びの有無 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="drunkBeforeStatus">無</span>
+
+        <div class="row">
+          <span class="label-text">酒気帯びの有無</span>
+          <label class="switch">
+            <input type="checkbox" id="drunkBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 免許証携帯確認 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="licenseBeforeStatus">携帯</span>
+
+        <div class="row">
+          <span class="label-text">免許証携帯確認</span>
+          <label class="switch">
+            <input type="checkbox" id="licenseBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 タイヤ -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="tireBeforeStatus">正常</span>
+
+        <div class="row">
+          <span class="label-text">タイヤ（亀裂・空気圧・摩耗）</span>
+          <label class="switch">
+            <input type="checkbox" id="tireBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 灯火類 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="lightBeforeStatus">正常</span>
+
+        <div class="row">
+          <span class="label-text">灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
+          <label class="switch">
+            <input type="checkbox" id="lightBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 油脂類 -->
+    <div class="check-item">
+      <div class="right-block">
+        <span class="status-text" id="oilBeforeStatus">正常</span>
+
+        <div class="row">
+          <span class="label-text">油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
+          <label class="switch">
+            <input type="checkbox" id="oilBefore">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <input type="hidden" id="callTypeHidden" value="業務前">
-  <!-- 業務前 点検項目 -->
+    <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
     <label>点検項目（業務前）</label>
 
@@ -516,3 +649,4 @@ form.addEventListener("submit", e => {
 
 </body>
 </html>
+
