@@ -28,7 +28,6 @@
       font-size:14px;
     }
 
-    /* 日付・点呼時刻のコンパクト化 */
     .inline-group {
       display:flex;
       gap:12px;
@@ -56,7 +55,6 @@
       border-radius:8px;
     }
 
-    /* --- 超コンパクト最適化版（実画面調整済み） --- */
     .check-item {
       padding:6px 0;
       border-bottom:1px solid #eee;
@@ -86,7 +84,6 @@
       font-size:12px;
     }
 
-    /* トグルスイッチ（小型化） */
     .switch {
       position:relative;
       display:inline-block;
@@ -142,7 +139,6 @@
 
 <form id="form">
 
-  <!-- 日付 & 点呼時刻 -->
   <div class="inline-group">
     <div style="flex:1;">
       <label>日付</label>
@@ -155,7 +151,6 @@
     </div>
   </div>
 
-  <!-- 点呼区分 -->
   <label>点呼区分</label>
   <div style="display:flex; align-items:center; gap:10px;">
     <label class="switch">
@@ -166,15 +161,13 @@
   </div>
 
   <input type="hidden" id="callTypeHidden" value="業務前">
-  <!-- 業務前 点検項目 -->
+
   <div id="checklistBefore">
     <label>点検項目（業務前）</label>
 
-    <!-- 1 アルコール検知器 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="alcoholBeforeStatus">使用</span>
-
         <div class="row">
           <span class="label-text">アルコール検知器の使用の有無</span>
           <label class="switch">
@@ -185,11 +178,9 @@
       </div>
     </div>
 
-    <!-- 2 車両異常確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="vehicleBeforeStatus">正常</span>
-
         <div class="row">
           <span class="label-text">車両異常確認</span>
           <label class="switch">
@@ -200,11 +191,9 @@
       </div>
     </div>
 
-    <!-- 3 体調確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="conditionBeforeStatus">良好</span>
-
         <div class="row">
           <span class="label-text">体調確認</span>
           <label class="switch">
@@ -215,11 +204,9 @@
       </div>
     </div>
 
-    <!-- 4 酒気帯びの有無 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="drunkBeforeStatus">無</span>
-
         <div class="row">
           <span class="label-text">酒気帯びの有無</span>
           <label class="switch">
@@ -230,11 +217,9 @@
       </div>
     </div>
 
-    <!-- 5 免許証携帯確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="licenseBeforeStatus">携帯</span>
-
         <div class="row">
           <span class="label-text">免許証携帯確認</span>
           <label class="switch">
@@ -245,11 +230,9 @@
       </div>
     </div>
 
-    <!-- 6 タイヤ -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="tireBeforeStatus">正常</span>
-
         <div class="row">
           <span class="label-text">タイヤ（亀裂・空気圧・摩耗）</span>
           <label class="switch">
@@ -260,11 +243,9 @@
       </div>
     </div>
 
-    <!-- 7 灯火類 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="lightBeforeStatus">正常</span>
-
         <div class="row">
           <span class="label-text">灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
           <label class="switch">
@@ -275,11 +256,9 @@
       </div>
     </div>
 
-    <!-- 8 油脂類 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="oilBeforeStatus">正常</span>
-
         <div class="row">
           <span class="label-text">油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
           <label class="switch">
@@ -291,15 +270,13 @@
     </div>
 
   </div>
-  <!-- 業務後 点検項目 -->
+
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
 
-    <!-- 1 アルコール検知器 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="alcoholAfterStatus">使用</span>
-
         <div class="row">
           <span class="label-text">アルコール検知器の使用の有無</span>
           <label class="switch">
@@ -310,11 +287,9 @@
       </div>
     </div>
 
-    <!-- 2 車両異常確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="vehicleAfterStatus">正常</span>
-
         <div class="row">
           <span class="label-text">車両異常確認</span>
           <label class="switch">
@@ -325,11 +300,9 @@
       </div>
     </div>
 
-    <!-- 3 体調確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="conditionAfterStatus">良好</span>
-
         <div class="row">
           <span class="label-text">体調確認</span>
           <label class="switch">
@@ -340,11 +313,9 @@
       </div>
     </div>
 
-    <!-- 4 酒気帯びの有無 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="drunkAfterStatus">無</span>
-
         <div class="row">
           <span class="label-text">酒気帯びの有無</span>
           <label class="switch">
@@ -355,11 +326,9 @@
       </div>
     </div>
 
-    <!-- 5 免許証携帯確認 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="licenseAfterStatus">携帯</span>
-
         <div class="row">
           <span class="label-text">免許証携帯確認</span>
           <label class="switch">
@@ -370,11 +339,9 @@
       </div>
     </div>
 
-    <!-- 6 タイヤ -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="tireAfterStatus">正常</span>
-
         <div class="row">
           <span class="label-text">タイヤ（亀裂・空気圧・摩耗）</span>
           <label class="switch">
@@ -385,11 +352,9 @@
       </div>
     </div>
 
-    <!-- 7 灯火類 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="lightAfterStatus">正常</span>
-
         <div class="row">
           <span class="label-text">灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
           <label class="switch">
@@ -400,11 +365,9 @@
       </div>
     </div>
 
-    <!-- 8 油脂類 -->
     <div class="check-item">
       <div class="right-block">
         <span class="status-text" id="oilAfterStatus">正常</span>
-
         <div class="row">
           <span class="label-text">油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
           <label class="switch">
@@ -416,7 +379,8 @@
     </div>
 
   </div>
-<script>
+
+  <script>
 function init() {
   const now = new Date();
   date.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -447,7 +411,6 @@ callTypeToggle.addEventListener("change", e => {
   checklistAfter.classList.toggle("hidden", !after);
 });
 
-/* ステータス切り替え関数（修正版） */
 function bindStatus(toggleId, statusId, onText, offText) {
   document.getElementById(toggleId).addEventListener("change", e => {
     document.getElementById(statusId).textContent =
@@ -455,7 +418,6 @@ function bindStatus(toggleId, statusId, onText, offText) {
   });
 }
 
-/* 業務前 */
 bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
 bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
 bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
@@ -465,7 +427,6 @@ bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
 bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
 bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
 
-/* 業務後 */
 bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
 bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
 bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
@@ -477,10 +438,6 @@ bindStatus("oilAfter", "oilAfterStatus", "正常", "異常");
 
 form.addEventListener("submit", e => {
   e.preventDefault();
-
-  ...処理...
-
-});
 
   const checklist = {
     alcoholBefore: alcoholBeforeStatus.textContent,
@@ -527,5 +484,6 @@ form.addEventListener("submit", e => {
 });
 </script>
 
+</form>
 </body>
 </html>
