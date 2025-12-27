@@ -18,10 +18,23 @@
       gap:24px;
     }
     .inline-group input {
-      width:85%;          /* 横幅短く */
-      height:32px;        /* 高さ小さく */
-      padding:4px 6px;    /* 余白小さく */
-      font-size:16px;     /* フォントサイズは変更しない */
+      width:85%;
+      height:32px;
+      padding:4px 6px;
+      font-size:16px;
+    }
+
+    /* 距離入力欄（横幅短く） */
+    .distance-box {
+      width:120px;
+      height:32px;
+      padding:4px 6px;
+      font-size:16px;
+    }
+
+    .km-label {
+      margin-left:6px;
+      font-weight:bold;
     }
 
     .hidden { display:none; }
@@ -98,16 +111,25 @@
   <input type="hidden" id="callTypeHidden" value="業務前">
 
   <!-- 走行距離（業務前のみ） -->
-  <label id="beforeLabel">走行距離（運行前）</label>
-  <input type="number" id="distanceBefore">
+  <label id="beforeLabel">走行距離計（運行前）</label>
+  <div style="display:flex; align-items:center;">
+    <input type="number" id="distanceBefore" class="distance-box">
+    <span class="km-label">km</span>
+  </div>
 
   <!-- 業務後：走行距離計（運行後） -->
   <label class="hidden" id="afterLabel">走行距離計（運行後）</label>
-  <input type="number" id="distanceAfter" class="hidden">
+  <div style="display:flex; align-items:center;" id="afterBox" class="hidden">
+    <input type="number" id="distanceAfter" class="distance-box hidden">
+    <span class="km-label hidden" id="afterKm">km</span>
+  </div>
 
   <!-- 業務後：当日の総走行距離計 -->
   <label class="hidden" id="totalDistanceLabel">当日の総走行距離計</label>
-  <input type="number" id="totalDistance" class="hidden">
+  <div style="display:flex; align-items:center;" id="totalBox" class="hidden">
+    <input type="number" id="totalDistance" class="distance-box hidden" readonly>
+    <span class="km-label hidden" id="totalKm">km</span>
+  </div>
 
   <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
@@ -116,7 +138,7 @@
     <div class="check-item">
       <span>アルコール検知器の使用の有無</span>
       <div><label class="switch"><input type="checkbox" id="alcoholBefore"><span class="slider"></span></label>
-      <span id="alcoholBeforeStatus">未使用</span></div>
+      <span id="alcoholBeforeStatus">使用</span></div>
     </div>
 
     <div class="check-item">
@@ -162,14 +184,14 @@
     </div>
   </div>
 
-  <!-- 業務後 点検項目（順番統一） -->
+  <!-- 業務後 点検項目 -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
 
     <div class="check-item">
       <span>アルコール検知器の使用の有無</span>
       <div><label class="switch"><input type="checkbox" id="alcoholAfter"><span class="slider"></span></label>
-      <span id="alcoholAfterStatus">未使用</span></div>
+      <span id="alcoholAfterStatus">使用</span></div>
     </div>
 
     <div class="check-item">
@@ -225,6 +247,21 @@ function init() {
   callTime.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 }
 
+/* 自動計算 */
+function calcTotal() {
+  const before = Number(distanceBefore.value);
+  const after = Number(distanceAfter.value);
+
+  if (!isNaN(before) && !isNaN(after) && after >= before) {
+    totalDistance.value = after - before;
+  } else {
+    totalDistance.value = "";
+  }
+}
+
+distanceBefore.addEventListener("input", calcTotal);
+distanceAfter.addEventListener("input", calcTotal);
+
 /* 点呼区分切替 */
 callTypeToggle.addEventListener("change", e => {
   const after = e.target.checked;
@@ -237,9 +274,11 @@ callTypeToggle.addEventListener("change", e => {
 
   afterLabel.classList.toggle("hidden", !after);
   distanceAfter.classList.toggle("hidden", !after);
+  afterKm.classList.toggle("hidden", !after);
 
   totalDistanceLabel.classList.toggle("hidden", !after);
   totalDistance.classList.toggle("hidden", !after);
+  totalKm.classList.toggle("hidden", !after);
 
   checklistBefore.classList.toggle("hidden", after);
   checklistAfter.classList.toggle("hidden", !after);
