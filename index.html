@@ -50,11 +50,7 @@
       font-size:16px;
     }
 
-    /* ★ 酒気帯びの有無だけトグルを中央寄りにする（18px） */
-    #drunkBefore + .slider,
-    #drunkAfter + .slider {
-      margin-right:18px;
-    }
+    /* margin-right は完全削除（デフォルト位置に統一） */
 
     .switch {
       position:relative;
@@ -431,4 +427,12 @@ form.addEventListener("submit", e => {
   .then(r => r.json())
   .then(() => {
     alert("保存しました");
-    form.reset
+    form.reset();
+    init();
+  })
+  .catch(() => alert("保存失敗"));
+});
+</script>
+
+</body>
+</html>
