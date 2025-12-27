@@ -481,7 +481,21 @@ form.addEventListener("submit", e => {
   })
   .catch(() => alert("保存失敗"));
 });
-}    
+}  
+  <script>
+// ステータス切り替え（存在する場合のみ動作）
+document.addEventListener("DOMContentLoaded", () => {
+  const statusSelect = document.getElementById("status");
+  const statusDisplay = document.getElementById("statusDisplay");
+
+  if (statusSelect && statusDisplay) {
+    statusSelect.addEventListener("change", () => {
+      statusDisplay.textContent = statusSelect.value;
+    });
+  }
+});
+</script>
+  
 </script>
 
 </form>
