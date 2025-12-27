@@ -50,10 +50,23 @@
       font-size:16px;
     }
 
-    /* ★ 全トグルを中央寄りにする（ステータス文字は動かない） */
-    .check-item .switch {
+    /* ★ 左寄せ（中央寄り）にするトグルだけ margin-right を追加 */
+    #vehicleBefore + .slider,
+    #vehicleAfter + .slider,
+    #conditionBefore + .slider,
+    #conditionAfter + .slider,
+    #drunkBefore + .slider,
+    #drunkAfter + .slider,
+    #tireBefore + .slider,
+    #tireAfter + .slider,
+    #lightBefore + .slider,
+    #lightAfter + .slider,
+    #oilBefore + .slider,
+    #oilAfter + .slider {
       margin-right: 18px;
     }
+
+    /* アルコール検知器・免許証携帯確認は margin なし（デフォルト） */
 
     .switch {
       position:relative;
