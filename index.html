@@ -481,75 +481,9 @@ form.addEventListener("submit", e => {
   })
   .catch(() => alert("保存失敗"));
 });
+}    
 </script>
 
 </form>
 </body>
-  <script>
-// ===============================
-// 要素取得（存在しない場合もあるので安全に）
-// ===============================
-const statusSelect = document.getElementById("status");
-const statusDisplay = document.getElementById("statusDisplay");
-
-const categorySelect = document.getElementById("category");
-const categoryDisplay = document.getElementById("categoryDisplay");
-
-const distanceBefore = document.getElementById("distanceBefore");
-const distanceAfter = document.getElementById("distanceAfter");
-const distanceTotal = document.getElementById("distanceTotal");
-
-// ===============================
-// ステータス切替（存在する場合のみ）
-// ===============================
-if (statusSelect && statusDisplay) {
-  statusSelect.addEventListener("change", () => {
-    statusDisplay.textContent = statusSelect.value;
-  });
-}
-
-// ===============================
-// 点呼区分切替（存在する場合のみ）
-// ===============================
-if (categorySelect && categoryDisplay) {
-  categorySelect.addEventListener("change", () => {
-    categoryDisplay.textContent = categorySelect.value;
-  });
-}
-
-// ===============================
-// 距離計算（存在する場合のみ）
-// ===============================
-function calcTotal() {
-  if (!distanceBefore || !distanceAfter || !distanceTotal) return;
-
-  const before = Number(distanceBefore.value);
-  const after = Number(distanceAfter.value);
-
-  if (!isNaN(before) && !isNaN(after)) {
-    distanceTotal.value = after - before;
-  }
-}
-
-if (distanceBefore) {
-  distanceBefore.addEventListener("input", calcTotal);
-}
-if (distanceAfter) {
-  distanceAfter.addEventListener("input", calcTotal);
-}
-
-// ===============================
-// トグルスイッチ（存在する場合のみ）
-// ===============================
-document.querySelectorAll(".toggle-input").forEach(toggle => {
-  toggle.addEventListener("change", () => {
-    const targetId = toggle.dataset.target;
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.textContent = toggle.checked ? "済" : "未";
-    }
-  });
-});
-</script>
-
 </html>
