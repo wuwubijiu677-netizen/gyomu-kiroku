@@ -50,23 +50,30 @@
       font-size:16px;
     }
 
-    /* ★ 左寄せ（中央寄り）にしたいトグルだけ margin-right を追加 */
-    #vehicleBefore + .slider,
-    #vehicleAfter + .slider,
-    #conditionBefore + .slider,
-    #conditionAfter + .slider,
-    #drunkBefore + .slider,
-    #drunkAfter + .slider,
-    #tireBefore + .slider,
-    #tireAfter + .slider,
-    #lightBefore + .slider,
-    #lightAfter + .slider,
-    #oilBefore + .slider,
-    #oilAfter + .slider {
-      margin-right: 18px;
+    /* ★ 右側ブロックを flex にして margin-right を使わず左寄せにする */
+    .check-item > div {
+      display:flex;
+      align-items:center;
+      gap:6px; /* トグルとステータスの間隔 */
     }
 
-    /* アルコール検知器・免許証携帯確認は margin なし（デフォルト） */
+    /* ★ アルコール検知器・免許証携帯確認だけは元のままに戻す */
+    #alcoholBefore, #alcoholAfter,
+    #licenseBefore, #licenseAfter {
+      /* input なので親を指定する必要がある */
+    }
+
+    /* 業務前の1番目（アルコール）と5番目（免許証） */
+    #checklistBefore .check-item:nth-child(2) > div,
+    #checklistBefore .check-item:nth-child(6) > div {
+      display:inline-block;
+    }
+
+    /* 業務後の1番目（アルコール）と5番目（免許証） */
+    #checklistAfter .check-item:nth-child(2) > div,
+    #checklistAfter .check-item:nth-child(6) > div {
+      display:inline-block;
+    }
 
     .switch {
       position:relative;
