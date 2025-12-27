@@ -42,25 +42,23 @@
       background:#00bcd4; color:#fff; border:none; border-radius:8px;
     }
 
+    /* ★ 新しい構造：ステータス → 項目名（縦） → トグル（右） */
     .check-item {
       display:flex;
       justify-content:space-between;
-      align-items:center;
-      padding:8px 0;
+      align-items:flex-start;
+      padding:12px 0;
       font-size:16px;
     }
 
-    /* ★ ステータス文字を左、トグルを右にする（中央寄り） */
-    .check-item > div {
+    .left-block {
       display:flex;
-      align-items:center;
-      gap:10px; /* ← 中央寄りに見える自然な間隔 */
+      flex-direction:column;
+      gap:4px;
     }
-    .check-item > div span {
-      order:1; /* ステータスを左側へ */
-    }
-    .check-item > div .switch {
-      order:2; /* トグルは右側のまま */
+
+    .status-text {
+      font-weight:bold;
     }
 
     .switch {
@@ -119,212 +117,207 @@
     <span id="callTypeResult" style="font-weight:bold;">業務前</span>
   </div>
   <input type="hidden" id="callTypeHidden" value="業務前">
-
-  <!-- 走行距離（業務前のみ） -->
-  <label id="beforeLabel">走行距離計（運行前）</label>
-  <div style="display:flex; align-items:center;">
-    <input type="number" id="distanceBefore" class="distance-box">
-    <span class="km-label">km</span>
-  </div>
-
-  <!-- 業務後：走行距離計（運行後） -->
-  <label class="hidden" id="afterLabel">走行距離計（運行後）</label>
-  <div style="display:flex; align-items:center;" id="afterBox" class="hidden">
-    <input type="number" id="distanceAfter" class="distance-box hidden">
-    <span class="km-label hidden" id="afterKm">km</span>
-  </div>
-
-  <!-- 業務後：当日の総走行距離計 -->
-  <label class="hidden" id="totalDistanceLabel">当日の総走行距離計</label>
-  <div style="display:flex; align-items:center;" id="totalBox" class="hidden">
-    <input type="number" id="totalDistance" class="distance-box hidden" readonly>
-    <span class="km-label hidden" id="totalKm">km</span>
-  </div>
-
   <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
     <label>点検項目（業務前）</label>
 
+    <!-- 1 アルコール検知器 -->
     <div class="check-item">
-      <span>アルコール検知器の使用の有無</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="alcoholBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="alcoholBeforeStatus">使用</span>
+      <div class="left-block">
+        <span class="status-text" id="alcoholBeforeStatus">使用</span>
+        <span>アルコール検知器の使用の有無</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="alcoholBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 2 車両異常確認 -->
     <div class="check-item">
-      <span>車両異常確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="vehicleBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="vehicleBeforeStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="vehicleBeforeStatus">正常</span>
+        <span>車両異常確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="vehicleBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 3 体調確認 -->
     <div class="check-item">
-      <span>体調確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="conditionBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="conditionBeforeStatus">良好</span>
+      <div class="left-block">
+        <span class="status-text" id="conditionBeforeStatus">良好</span>
+        <span>体調確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="conditionBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 4 酒気帯びの有無 -->
     <div class="check-item">
-      <span>酒気帯びの有無</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="drunkBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="drunkBeforeStatus">無</span>
+      <div class="left-block">
+        <span class="status-text" id="drunkBeforeStatus">無</span>
+        <span>酒気帯びの有無</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="drunkBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 5 免許証携帯確認 -->
     <div class="check-item">
-      <span>免許証携帯確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="licenseBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="licenseBeforeStatus">携帯</span>
+      <div class="left-block">
+        <span class="status-text" id="licenseBeforeStatus">携帯</span>
+        <span>免許証携帯確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="licenseBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 6 タイヤ -->
     <div class="check-item">
-      <span>タイヤ（亀裂・空気圧・摩耗）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="tireBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="tireBeforeStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="tireBeforeStatus">正常</span>
+        <span>タイヤ（亀裂・空気圧・摩耗）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="tireBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 7 灯火類 -->
     <div class="check-item">
-      <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="lightBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="lightBeforeStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="lightBeforeStatus">正常</span>
+        <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="lightBefore">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 8 油脂類 -->
     <div class="check-item">
-      <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="oilBefore">
-          <span class="slider"></span>
-        </label>
-        <span id="oilBeforeStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="oilBeforeStatus">正常</span>
+        <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="oilBefore">
+        <span class="slider"></span>
+      </label>
     </div>
+
   </div>
-
   <!-- 業務後 点検項目 -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
 
+    <!-- 1 アルコール検知器 -->
     <div class="check-item">
-      <span>アルコール検知器の使用の有無</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="alcoholAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="alcoholAfterStatus">使用</span>
+      <div class="left-block">
+        <span class="status-text" id="alcoholAfterStatus">使用</span>
+        <span>アルコール検知器の使用の有無</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="alcoholAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 2 車両異常確認 -->
     <div class="check-item">
-      <span>車両異常確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="vehicleAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="vehicleAfterStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="vehicleAfterStatus">正常</span>
+        <span>車両異常確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="vehicleAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 3 体調確認 -->
     <div class="check-item">
-      <span>体調確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="conditionAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="conditionAfterStatus">良好</span>
+      <div class="left-block">
+        <span class="status-text" id="conditionAfterStatus">良好</span>
+        <span>体調確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="conditionAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 4 酒気帯びの有無 -->
     <div class="check-item">
-      <span>酒気帯びの有無</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="drunkAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="drunkAfterStatus">無</span>
+      <div class="left-block">
+        <span class="status-text" id="drunkAfterStatus">無</span>
+        <span>酒気帯びの有無</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="drunkAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 5 免許証携帯確認 -->
     <div class="check-item">
-      <span>免許証携帯確認</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="licenseAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="licenseAfterStatus">携帯</span>
+      <div class="left-block">
+        <span class="status-text" id="licenseAfterStatus">携帯</span>
+        <span>免許証携帯確認</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="licenseAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 6 タイヤ -->
     <div class="check-item">
-      <span>タイヤ（亀裂・空気圧・摩耗）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="tireAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="tireAfterStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="tireAfterStatus">正常</span>
+        <span>タイヤ（亀裂・空気圧・摩耗）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="tireAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 7 灯火類 -->
     <div class="check-item">
-      <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="lightAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="lightAfterStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="lightAfterStatus">正常</span>
+        <span>灯火類（方向指示器・前照灯・車幅灯・制動灯）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="lightAfter">
+        <span class="slider"></span>
+      </label>
     </div>
 
+    <!-- 8 油脂類 -->
     <div class="check-item">
-      <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
-      <div>
-        <label class="switch">
-          <input type="checkbox" id="oilAfter">
-          <span class="slider"></span>
-        </label>
-        <span id="oilAfterStatus">正常</span>
+      <div class="left-block">
+        <span class="status-text" id="oilAfterStatus">正常</span>
+        <span>油脂類（エンジン・ミッション・パワステ・ブレーキ・冷却水）</span>
       </div>
+      <label class="switch">
+        <input type="checkbox" id="oilAfter">
+        <span class="slider"></span>
+      </label>
     </div>
+
   </div>
 
   <button type="submit">登録を保存する</button>
