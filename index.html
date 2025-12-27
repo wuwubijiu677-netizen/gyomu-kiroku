@@ -50,10 +50,9 @@
       font-size:16px;
     }
 
-    /* ★ 追加：左側テキスト幅を統一してトグル位置を完全に揃える */
-    .check-item span:first-child {
-      width:260px;
-      display:inline-block;
+    /* ★ 追加：トグル位置を中央寄りに移動 */
+    .check-item > div {
+      margin-right:40px;
     }
 
     .switch {
@@ -81,7 +80,7 @@
       form { margin:20px; padding:18px; }
       .inline-group { flex-direction:column; gap:12px; }
       .check-item { font-size:15px; }
-      .check-item span:first-child { width:200px; }
+      .check-item > div { margin-right:20px; }
     }
   </style>
 </head>
@@ -441,5 +440,3 @@ form.addEventListener("submit", e => {
 
 </body>
 </html>
-
-  
