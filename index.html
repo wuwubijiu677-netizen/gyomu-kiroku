@@ -50,6 +50,12 @@
       font-size:16px;
     }
 
+    /* ★ 追加：左側テキスト幅を統一してトグル位置を完全に揃える */
+    .check-item span:first-child {
+      width:260px;
+      display:inline-block;
+    }
+
     .switch {
       position:relative;
       display:inline-block;
@@ -75,6 +81,7 @@
       form { margin:20px; padding:18px; }
       .inline-group { flex-direction:column; gap:12px; }
       .check-item { font-size:15px; }
+      .check-item span:first-child { width:200px; }
     }
   </style>
 </head>
@@ -165,7 +172,6 @@
       </div>
     </div>
 
-    <!-- ★ 修正済み：酒気帯びの有無（業務前） -->
     <div class="check-item">
       <span>酒気帯びの有無</span>
       <div>
@@ -259,7 +265,6 @@
       </div>
     </div>
 
-    <!-- ★ 修正済み：酒気帯びの有無（業務後） -->
     <div class="check-item">
       <span>酒気帯びの有無</span>
       <div>
@@ -436,3 +441,5 @@ form.addEventListener("submit", e => {
 
 </body>
 </html>
+
+  
