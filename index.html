@@ -50,29 +50,17 @@
       font-size:16px;
     }
 
-    /* ★ 右側ブロックを flex にして margin-right を使わず左寄せにする */
+    /* ★ ステータス文字を左、トグルを右にする（中央寄り） */
     .check-item > div {
       display:flex;
       align-items:center;
-      gap:6px; /* トグルとステータスの間隔 */
+      gap:10px; /* ← 中央寄りに見える自然な間隔 */
     }
-
-    /* ★ アルコール検知器・免許証携帯確認だけは元のままに戻す */
-    #alcoholBefore, #alcoholAfter,
-    #licenseBefore, #licenseAfter {
-      /* input なので親を指定する必要がある */
+    .check-item > div span {
+      order:1; /* ステータスを左側へ */
     }
-
-    /* 業務前の1番目（アルコール）と5番目（免許証） */
-    #checklistBefore .check-item:nth-child(2) > div,
-    #checklistBefore .check-item:nth-child(6) > div {
-      display:inline-block;
-    }
-
-    /* 業務後の1番目（アルコール）と5番目（免許証） */
-    #checklistAfter .check-item:nth-child(2) > div,
-    #checklistAfter .check-item:nth-child(6) > div {
-      display:inline-block;
+    .check-item > div .switch {
+      order:2; /* トグルは右側のまま */
     }
 
     .switch {
