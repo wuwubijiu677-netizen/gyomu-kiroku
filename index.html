@@ -447,7 +447,7 @@ callTypeToggle.addEventListener("change", e => {
   checklistAfter.classList.toggle("hidden", !after);
 });
 
-/* ステータス切り替え関数 */
+/* ステータス切り替え関数（修正版） */
 function bindStatus(toggleId, statusId, onText, offText) {
   document.getElementById(toggleId).addEventListener("change", e => {
     document.getElementById(statusId).textContent =
