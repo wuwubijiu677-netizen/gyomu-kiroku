@@ -6,16 +6,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <style>
-    body { font-family: system-ui,-apple-system; background:#f9f9f9; margin:0; }
-    form { max-width:600px; margin:40px auto; background:#fff; padding:24px;
-           border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    body {
+      font-family: system-ui, -apple-system;
+      background:#f9f9f9;
+      margin:0;
+    }
 
-    label { margin-top:16px; display:block; font-weight:bold; }
+    form {
+      max-width:600px;
+      margin:40px auto;
+      background:#fff;
+      padding:24px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,.1);
+    }
+
+    label {
+      margin-top:16px;
+      display:block;
+      font-weight:bold;
+    }
 
     .inline-group {
       display:flex;
       gap:24px;
     }
+
     .inline-group input {
       width:85%;
       height:32px;
@@ -38,11 +54,17 @@
     .hidden { display:none; }
 
     button {
-      width:100%; margin-top:24px; padding:14px; font-size:18px;
-      background:#00bcd4; color:#fff; border:none; border-radius:8px;
+      width:100%;
+      margin-top:24px;
+      padding:14px;
+      font-size:18px;
+      background:#00bcd4;
+      color:#fff;
+      border:none;
+      border-radius:8px;
     }
 
-    /* ★ 新しい構造：ステータス → 項目名（縦） → トグル（右） */
+    /* ★ 新構造：ステータス → 項目名（縦） → トグル（右） */
     .check-item {
       display:flex;
       justify-content:space-between;
@@ -61,26 +83,44 @@
       font-weight:bold;
     }
 
+    /* トグルスイッチ */
     .switch {
       position:relative;
       display:inline-block;
       width:52px;
       height:28px;
     }
+
     .switch input { display:none; }
+
     .slider {
-      position:absolute; cursor:pointer;
+      position:absolute;
+      cursor:pointer;
       top:0; left:0; right:0; bottom:0;
-      background-color:#ccc; border-radius:34px; transition:.3s;
+      background-color:#ccc;
+      border-radius:34px;
+      transition:.3s;
     }
+
     .slider:before {
-      position:absolute; content:"";
-      height:22px; width:22px;
-      left:3px; bottom:3px;
-      background:white; border-radius:50%; transition:.3s;
+      position:absolute;
+      content:"";
+      height:22px;
+      width:22px;
+      left:3px;
+      bottom:3px;
+      background:white;
+      border-radius:50%;
+      transition:.3s;
     }
-    .switch input:checked + .slider { background-color:#00bcd4; }
-    .switch input:checked + .slider:before { transform:translateX(24px); }
+
+    .switch input:checked + .slider {
+      background-color:#00bcd4;
+    }
+
+    .switch input:checked + .slider:before {
+      transform:translateX(24px);
+    }
 
     @media (max-width:480px) {
       form { margin:20px; padding:18px; }
@@ -101,6 +141,7 @@
       <label>日付</label>
       <input type="date" id="date" required>
     </div>
+
     <div style="flex:1;">
       <label>点呼時刻</label>
       <input type="time" id="callTime" required>
@@ -116,8 +157,9 @@
     </label>
     <span id="callTypeResult" style="font-weight:bold;">業務前</span>
   </div>
+
   <input type="hidden" id="callTypeHidden" value="業務前">
-   <!-- 業務前 点検項目 -->
+  <!-- 業務前 点検項目 -->
   <div id="checklistBefore">
     <label>点検項目（業務前）</label>
 
@@ -218,7 +260,6 @@
     </div>
 
   </div>
-
   <!-- 業務後 点検項目 -->
   <div id="checklistAfter" class="hidden">
     <label>点検項目（業務後）</label>
@@ -320,10 +361,6 @@
     </div>
 
   </div>
-
-  <button type="submit">登録を保存する</button>
-</form>
-
 <script>
 function init() {
   const now = new Date();
@@ -373,6 +410,7 @@ function bindStatus(toggleId, statusId, onText, offText) {
   });
 }
 
+/* 業務前 */
 bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
 bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
 bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
@@ -382,6 +420,7 @@ bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
 bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
 bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
 
+/* 業務後 */
 bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
 bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
 bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
