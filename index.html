@@ -50,9 +50,9 @@
       font-size:16px;
     }
 
-    /* ★ 追加：トグル位置を中央寄りに移動 */
-    .check-item > div {
-      margin-right:40px;
+    /* ★ トグルだけ中央寄りに移動（ステータス文字は動かない） */
+    .check-item .switch {
+      margin-right:20px;
     }
 
     .switch {
@@ -80,7 +80,7 @@
       form { margin:20px; padding:18px; }
       .inline-group { flex-direction:column; gap:12px; }
       .check-item { font-size:15px; }
-      .check-item > div { margin-right:20px; }
+      .check-item .switch { margin-right:10px; }
     }
   </style>
 </head>
