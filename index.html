@@ -2,190 +2,131 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務の記録</title>
+  <title>業務記録システム</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
   <style>
-    body {
-      font-family: system-ui, -apple-system;
-      background:#f9f9f9;
-      margin:0;
-      padding-bottom: 40px;
+    :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
+    body { font-family: system-ui, -apple-system; background: var(--bg); margin: 0; color: var(--text); padding-bottom: 40px; }
+    
+    .container { max-width: 500px; margin: 0 auto; background: #fff; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* ヘッダー */
+    .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header h2 { margin: 0; font-size: 1.2rem; }
+
+    /* 進行バー */
+    .step-bar { display: flex; background: #e0f7fa; padding: 10px 0; border-bottom: 1px solid #b2ebf2; }
+    .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; position: relative; }
+    .step.active { color: var(--primary); }
+    .step.active::after { content: ""; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #e0f7fa; }
+
+    form { padding: 20px; flex: 1; }
+    .page { display: none; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 入力パーツ */
+    label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
+    input[type="text"], input[type="date"], input[type="time"], input[type="number"], select {
+      width: 100%; height: 45px; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; -webkit-appearance: none;
     }
+    .readonly-field { background: #f0f0f0; color: #666; border-color: #eee; }
 
-    form {
-      max-width:600px;
-      margin:20px auto;
-      background:#fff;
-      padding:18px;
-      border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,.1);
-    }
+    /* 点検項目 */
+    .check-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .label-text { font-size: 13px; line-height: 1.4; flex: 1; padding-right: 15px; }
+    .status-block { text-align: right; min-width: 60px; }
+    .status-text { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #f44336; }
 
-    label {
-      margin-top:15px;
-      display:block;
-      font-weight:bold;
-      font-size:14px;
-    }
+    /* スイッチ本体 */
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { display: none; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
+    input:checked + .slider { background: var(--primary); }
+    input:checked + .slider:before { transform: translateX(24px); }
 
-    .inline-group {
-      display:flex;
-      gap:10px;
-      margin-top: 5px;
-    }
-
-    .inline-group div { flex: 1; }
-
-    .inline-group input {
-      width:100%;
-      height:36px;
-      padding:2px 8px;
-      font-size:14px;
-      border:1px solid #ccc;
-      border-radius:6px;
-      box-sizing: border-box;
-    }
-
-    .hidden { display:none; }
-
-    button {
-      width:100%;
-      margin-top:30px;
-      padding:15px;
-      font-size:16px;
-      background:#00bcd4;
-      color:#fff;
-      border:none;
-      border-radius:8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .check-item {
-      padding:10px 0;
-      border-bottom:1px solid #eee;
-    }
-
-    .right-block {
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:4px;
-    }
-
-    .row {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      width:100%;
-    }
-
-    .label-text {
-      font-size:13px;
-      color: #333;
-      flex: 1;
-      padding-right: 10px;
-      line-height: 1.4;
-    }
-
-    .status-text {
-      font-weight:bold;
-      font-size:12px;
-    }
-
-    /* スイッチ */
-    .switch {
-      position:relative;
-      display:inline-block;
-      width:44px;
-      height:22px;
-      flex-shrink: 0;
-    }
-
-    .switch input { display:none; }
-
-    .slider {
-      position:absolute;
-      cursor:pointer;
-      top:0; left:0; right:0; bottom:0;
-      background-color:#ccc;
-      border-radius:34px;
-      transition:.3s;
-    }
-
-    .slider:before {
-      position:absolute;
-      content:"";
-      height:18px;
-      width:18px;
-      left:2px;
-      bottom:2px;
-      background:white;
-      border-radius:50%;
-      transition:.3s;
-    }
-
-    .switch input:checked + .slider { background-color:#00bcd4; }
-    .switch input:checked + .slider:before { transform:translateX(22px); }
-
-    @media (max-width:480px) {
-      form { margin: 10px; padding: 12px; }
-      .label-text { font-size:12px; }
-    }
+    /* ボタン */
+    .btn-group { margin-top: 35px; display: flex; gap: 12px; }
+    button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-next { background: var(--primary); color: #fff; box-shadow: 0 4px 0 #0097a7; }
+    .btn-prev { background: #eee; color: #666; }
+    .btn-submit { background: #4caf50; color: #fff; box-shadow: 0 4px 0 #388e3c; }
+    button:active { transform: translateY(2px); box-shadow: none; }
   </style>
 </head>
-
 <body>
-<h2 style="text-align:center;">業務の記録</h2>
 
-<form id="form">
+<div class="container">
+  <div class="header"><h2>業務記録フォーム</h2></div>
+  
+  <div class="step-bar">
+    <div class="step id-step1 active">STEP 1. 基本情報</div>
+    <div class="step id-step2">STEP 2. 点呼点検</div>
+  </div>
 
-  <div class="inline-group">
-    <div>
+  <form id="recordForm">
+    <div id="page1" class="page active">
+      <label>運転者名</label>
+      <input type="text" value="屋比久悟" class="readonly-field" readonly>
+
+      <label>車両番号</label>
+      <input type="text" value="足立481り9586" class="readonly-field" readonly>
+
       <label>日付</label>
       <input type="date" id="date" required>
+
+      <label>走行距離 (km)</label>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;"><small>開始</small><input type="number" id="distStart" placeholder="000.0" required></div>
+        <div style="flex:1;"><small>終了</small><input type="number" id="distEnd" placeholder="000.0"></div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn-next" onclick="nextPage()">次へ進む</button>
+      </div>
     </div>
-    <div>
-      <label>点呼時刻</label>
+
+    <div id="page2" class="page">
+      <label>実施時間</label>
       <input type="time" id="callTime" required>
+
+      <label>点呼区分</label>
+      <div style="display:flex; align-items:center; gap:12px; margin: 10px 0;">
+        <label class="switch">
+          <input type="checkbox" id="callTypeToggle">
+          <span class="slider"></span>
+        </label>
+        <b id="callTypeResult" style="font-size: 18px; color: var(--primary);">業務前</b>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>点呼方法</label>
+          <select id="callMethod"><option>対面</option><option>電話</option><option>IT点呼</option></select>
+        </div>
+        <div style="flex:1;">
+          <label>点呼執行者</label>
+          <input type="text" id="executor" placeholder="氏名" required>
+        </div>
+      </div>
+
+      <div id="checklistArea" style="margin-top:25px; border-top: 2px solid var(--primary);">
+        <label style="color:var(--primary); margin-bottom:10px;">▼ 点検項目を確認</label>
+        <div id="itemsContainer"></div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn-prev" onclick="prevPage()">戻る</button>
+        <button type="submit" class="btn-submit">登録を完了する</button>
+      </div>
     </div>
-  </div>
-
-  <label>走行距離 (km)</label>
-  <div class="inline-group">
-    <div><input type="number" id="distanceBefore" placeholder="開始" required></div>
-    <div><input type="number" id="distanceAfter" placeholder="終了"></div>
-    <div><input type="number" id="totalDistance" placeholder="合計" readonly style="background:#eee;"></div>
-  </div>
-
-  <label>点呼区分</label>
-  <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-    <label class="switch">
-      <input type="checkbox" id="callTypeToggle">
-      <span class="slider"></span>
-    </label>
-    <span id="callTypeResult" style="font-weight:bold;">業務前</span>
-  </div>
-  <input type="hidden" id="callTypeHidden" value="業務前">
-
-  <div id="checklistBefore">
-    <label style="color:#00bcd4;">点検項目（業務前）</label>
-    <div id="itemsBeforeContainer"></div>
-  </div>
-
-  <div id="checklistAfter" class="hidden">
-    <label style="color:#00bcd4;">点検項目（業務後）</label>
-    <div id="itemsAfterContainer"></div>
-  </div>
-
-  <button type="submit">保存する</button>
-
-</form>
+  </form>
+</div>
 
 <script>
-// --- 設定：項目リスト ---
-const items = [
+// 点検項目の定義（すべての項目）
+const checkItems = [
   { id: "alcohol", label: "アルコール検知器の使用", on: "使用", off: "未使用" },
   { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
   { id: "condition", label: "体調確認", on: "良好", off: "不調" },
@@ -196,79 +137,84 @@ const items = [
   { id: "oil", label: "油脂類（オイル・冷却水等）", on: "正常", off: "異常" }
 ];
 
-// --- HTML生成 ---
-function createCheckItems(containerId, suffix) {
-  const container = document.getElementById(containerId);
-  items.forEach(item => {
-    const html = `
-      <div class="check-item">
-        <div class="right-block">
-          <span class="status-text" id="${item.id}${suffix}Status">${item.off}</span>
-          <div class="row">
-            <span class="label-text">${item.label}</span>
-            <label class="switch">
-              <input type="checkbox" id="${item.id}${suffix}">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-      </div>`;
-    container.insertAdjacentHTML('beforeend', html);
-  });
+// ページ遷移制御
+function nextPage() {
+  const date = document.getElementById('date').value;
+  const dist = document.getElementById('distStart').value;
+  if(!date || !dist) { alert("日付と走行距離（開始）を入力してください"); return; }
+  
+  document.getElementById('page1').classList.remove('active');
+  document.getElementById('page2').classList.add('active');
+  document.querySelector('.id-step2').classList.add('active');
+  window.scrollTo(0,0);
 }
 
-// --- 初期化 ---
-window.addEventListener("DOMContentLoaded", () => {
+function prevPage() {
+  document.getElementById('page2').classList.remove('active');
+  document.getElementById('page1').classList.add('active');
+  document.querySelector('.id-step2').classList.remove('active');
+  window.scrollTo(0,0);
+}
+
+// 初期設定
+function init() {
+  // 日付の初期設定
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
   document.getElementById('callTime').value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-  // 項目生成
-  createCheckItems("itemsBeforeContainer", "Before");
-  createCheckItems("itemsAfterContainer", "After");
-
-  // ステータス連動の登録
-  items.forEach(item => {
-    bindStatus(`${item.id}Before`, `${item.id}BeforeStatus`, item.on, item.off);
-    bindStatus(`${item.id}After`, `${item.id}AfterStatus`, item.on, item.off);
+  // 点検項目の生成
+  const container = document.getElementById('itemsContainer');
+  checkItems.forEach(item => {
+    const html = `
+      <div class="check-item">
+        <span class="label-text">${item.label}</span>
+        <div class="status-block">
+          <span class="status-text" id="${item.id}Status">${item.off}</span>
+          <label class="switch">
+            <input type="checkbox" id="${item.id}">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+    
+    // 切り替えイベント設定
+    const toggle = document.getElementById(item.id);
+    const statusText = document.getElementById(item.id + 'Status');
+    toggle.addEventListener('change', () => {
+      statusText.textContent = toggle.checked ? item.on : item.off;
+      statusText.style.color = toggle.checked ? "#00bcd4" : "#f44336";
+    });
   });
-
-  // 距離計算
-  const calc = () => {
-    const b = parseFloat(document.getElementById('distanceBefore').value) || 0;
-    const a = parseFloat(document.getElementById('distanceAfter').value) || 0;
-    document.getElementById('totalDistance').value = (a >= b && b > 0) ? (a - b).toFixed(1) : "";
-  };
-  document.getElementById('distanceBefore').addEventListener("input", calc);
-  document.getElementById('distanceAfter').addEventListener("input", calc);
-
-  // 点呼区分切り替え
-  document.getElementById('callTypeToggle').addEventListener("change", e => {
-    const isAfter = e.target.checked;
-    document.getElementById("callTypeResult").textContent = isAfter ? "業務後" : "業務前";
-    document.getElementById("callTypeHidden").value = isAfter ? "業務後" : "業務前";
-    document.getElementById("checklistBefore").classList.toggle("hidden", isAfter);
-    document.getElementById("checklistAfter").classList.toggle("hidden", !isAfter);
-  });
-});
-
-function bindStatus(toggleId, statusId, onText, offText) {
-  const toggle = document.getElementById(toggleId);
-  const status = document.getElementById(statusId);
-  const update = () => {
-    status.textContent = toggle.checked ? onText : offText;
-    status.style.color = toggle.checked ? "#00bcd4" : "#f44336";
-  };
-  toggle.addEventListener("change", update);
-  update();
 }
 
-// --- 送信 ---
-document.getElementById('form').addEventListener("submit", e => {
-  e.preventDefault();
-  // ここにfetch処理を記述（前回の回答と同様）
-  alert("保存しました");
+// 点呼区分（業務前/後）切り替え
+document.getElementById('callTypeToggle').addEventListener('change', e => {
+  document.getElementById('callTypeResult').textContent = e.target.checked ? "業務後" : "業務前";
 });
+
+// 送信処理
+document.getElementById('recordForm').addEventListener('submit', e => {
+  e.preventDefault();
+  
+  // 送信データの収集例
+  const results = {
+    driver: "屋比久悟",
+    carNo: "足立481り9586",
+    date: document.getElementById('date').value,
+    callType: document.getElementById('callTypeToggle').checked ? "業務後" : "業務前",
+    callTime: document.getElementById('callTime').value,
+    executor: document.getElementById('executor').value
+    // ...その他チェック項目の状態
+  };
+  
+  console.log("Submit Data:", results);
+  alert("点呼記録を登録しました。");
+  location.reload(); 
+});
+
+window.onload = init;
 </script>
 </body>
 </html>
