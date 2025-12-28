@@ -446,33 +446,42 @@ callTypeToggle.addEventListener("change", e => {
   checklistAfter.classList.toggle("hidden", !after);
 });
 
-/* ステータス切り替え関数 */
+/* ===== ステータス更新処理 ===== */
 function bindStatus(toggleId, statusId, onText, offText) {
-  document.getElementById(toggleId).addEventListener("change", e => {
-    document.getElementById(statusId).textContent =
-      e.target.checked ? onText : offText;
+  const toggle = document.getElementById(toggleId);
+  const status = document.getElementById(statusId);
+
+  if (!toggle || !status) return;
+
+  toggle.addEventListener("change", e => {
+    status.textContent = e.target.checked ? onText : offText;
   });
 }
 
-/* 業務前 */
-bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
-bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
-bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
-bindStatus("drunkBefore", "drunkBeforeStatus", "無", "有");
-bindStatus("licenseBefore", "licenseBeforeStatus", "携帯", "不携帯");
-bindStatus("tireBefore", "tireBeforeStatus", "正常", "異常");
-bindStatus("lightBefore", "lightBeforeStatus", "正常", "異常");
-bindStatus("oilBefore", "oilBeforeStatus", "正常", "異常");
 
-/* 業務後 */
-bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
-bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
-bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
-bindStatus("drunkAfter", "drunkAfterStatus", "無", "有");
-bindStatus("licenseAfter", "licenseAfterStatus", "携帯", "不携帯");
-bindStatus("tireAfter", "tireAfterStatus", "正常", "異常");
-bindStatus("lightAfter", "lightAfterStatus", "正常", "異常");
-bindStatus("oilAfter", "oilAfterStatus", "正常", "異常");
+/* ===== bindStatus のイベント登録 ===== */
+function registerStatusBindings() {
+  // 業務前
+  bindStatus("alcoholBefore","alcoholBeforeStatus","使用","未使用");
+  bindStatus("vehicleBefore","vehicleBeforeStatus","正常","異常");
+  bindStatus("conditionBefore","conditionBeforeStatus","良好","不調");
+  bindStatus("drunkBefore","drunkBeforeStatus","無","有");
+  bindStatus("licenseBefore","licenseBeforeStatus","携帯","不携帯");
+  bindStatus("tireBefore","tireBeforeStatus","正常","異常");
+  bindStatus("lightBefore","lightBeforeStatus","正常","異常");
+  bindStatus("oilBefore","oilBeforeStatus","正常","異常");
+
+  // 業務後
+  bindStatus("alcoholAfter","alcoholAfterStatus","使用","未使用");
+  bindStatus("vehicleAfter","vehicleAfterStatus","正常","異常");
+  bindStatus("conditionAfter","conditionAfterStatus","良好","不調");
+  bindStatus("drunkAfter","drunkAfterStatus","無","有");
+  bindStatus("licenseAfter","licenseAfterStatus","携帯","不携帯");
+  bindStatus("tireAfter","tireAfterStatus","正常","異常");
+  bindStatus("lightAfter","lightAfterStatus","正常","異常");
+  bindStatus("oilAfter","oilAfterStatus","正常","異常");
+}
+
 
 form.addEventListener("submit", e => {
   e.preventDefault();
@@ -520,6 +529,56 @@ form.addEventListener("submit", e => {
   })
   .catch(() => alert("保存失敗"));
 });
+  /* ===== 初期化 ===== */
+function init() {
+  /* --- 日付・時刻の初期値 --- */
+  const now = new Date();
+  date.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  callTime.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  /* --- 距離計算 --- */
+  const distanceBefore = document.getElementById("distanceBefore");
+  const distanceAfter  = document.getElementById("distanceAfter");
+  const totalDistance  = document.getElementById("totalDistance");
+
+  function calcTotal() {
+    const before = Number(distanceBefore.value);
+    const after = Number(distanceAfter.value);
+    if (!isNaN(before) && !isNaN(after) && after >= before) {
+      totalDistance.value = after - before;
+    } else {
+      totalDistance.value = "";
+    }
+  }
+
+  if (distanceBefore && distanceAfter && totalDistance) {
+    distanceBefore.addEventListener("input", calcTotal);
+    distanceAfter.addEventListener("input", calcTotal);
+  }
+
+  /* --- 業務前/後トグル --- */
+  const callTypeToggle  = document.getElementById("callTypeToggle");
+  const callTypeResult  = document.getElementById("callTypeResult");
+  const callTypeHidden  = document.getElementById("callTypeHidden");
+  const checklistBefore = document.getElementById("checklistBefore");
+  const checklistAfter  = document.getElementById("checklistAfter");
+
+  callTypeToggle.addEventListener("change", e => {
+    const after = e.target.checked;
+    callTypeResult.textContent = after ? "業務後" : "業務前";
+    callTypeHidden.value = after ? "業務後" : "業務前";
+    checklistBefore.classList.toggle("hidden", after);
+    checklistAfter.classList.toggle("hidden", !after);
+  });
+
+  /* --- チェック項目のイベント登録 --- */
+  registerStatusBindings();
+}
+
+  <script src="status.js"></script>
+<script src="events.js"></script>
+<script src="init.js"></script>
+
 </script>
 
 </body>
