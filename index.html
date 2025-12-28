@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム（日付跨ぎ対応版）</title>
+  <title>業務記録システム（日またぎ自動判定版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
@@ -34,7 +34,7 @@
     button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
     .btn-next { background: var(--primary); color: #fff; }
     .btn-submit { background: #4caf50; color: #fff; }
-    .btn-clear { background: #ff5252; color: #fff; font-size: 12px; padding: 8px; margin-top: 20px; width: 100%; border-radius: 8px; }
+    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 8px; margin-top: 20px; border-radius: 8px; border:none; width:100%; }
   </style>
 </head>
 <body>
@@ -43,7 +43,7 @@
   <div class="header"><h2>業務記録（屋比久 悟）</h2></div>
   <div class="step-bar">
     <div class="step id-step1 active">1. 運行前入力</div>
-    <div class="step id-step2">2. 運行後入力・送信</div>
+    <div class="step id-step2">2. 運行後入力・一括送信</div>
   </div>
 
   <form id="recordForm">
@@ -111,7 +111,7 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_draft_v4';
+const STORAGE_KEY = 'daily_report_final_v1';
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
   { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
@@ -122,31 +122,24 @@ const checkItems = [
   { id: "oil", label: "油脂類点検", on: "正常", off: "異常" }
 ];
 
-function nextPage() {
-  if(!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
-  saveDraft();
-  document.getElementById('page1').classList.remove('active');
-  document.getElementById('page2').classList.add('active');
-  document.querySelector('.id-step2').classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function prevPage() {
-  document.getElementById('page2').classList.remove('active');
-  document.getElementById('page1').classList.add('active');
-  document.querySelector('.id-step2').classList.remove('active');
-  window.scrollTo(0,0);
-}
-
+// 初期化処理
 function init() {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
-  const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
+  // デフォルト値のセット
   document.getElementById('dateBefore').value = dateStr;
-  document.getElementById('dateAfter').value = dateStr;
   document.getElementById('startTime').value = timeStr;
+  document.getElementById('dateAfter').value = dateStr;
   document.getElementById('endTime').value = timeStr;
+
+  // 深夜（0時〜5時）判定
+  if (now.getHours() < 5) {
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    document.getElementById('dateBefore').value = yesterday.toISOString().split('T')[0];
+  }
 
   renderItems("itemsBeforeContainer", "Before");
   renderItems("itemsAfterContainer", "After");
@@ -156,10 +149,35 @@ function init() {
   const inputs = ['dateBefore', 'dateAfter', 'distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'];
   inputs.forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
-      if(id.includes('dist')) calculateTotal();
+      if (id.includes('dist')) calculateTotal();
       saveDraft();
     });
   });
+}
+
+function nextPage() {
+  if (!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
+  
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+  // STEP2に移動する瞬間に運行後日付を「現在」に自動更新
+  document.getElementById('dateAfter').value = dateStr;
+  document.getElementById('endTime').value = timeStr;
+
+  saveDraft();
+  document.getElementById('page1').classList.remove('active');
+  document.getElementById('page2').classList.add('active');
+  document.querySelector('.id-step2').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function prevPage() {
+  document.getElementById('page2').classList.remove('active');
+  document.getElementById('page1').classList.add('active');
+  document.querySelector('.id-step2').classList.remove('active');
+  window.scrollTo(0, 0);
 }
 
 function renderItems(containerId, suffix) {
@@ -217,13 +235,13 @@ function loadDraft() {
   if (!saved) return;
   const draft = JSON.parse(saved);
   Object.keys(draft).forEach(key => {
-    if(key !== 'checks' && document.getElementById(key)) document.getElementById(key).value = draft[key];
+    if (key !== 'checks' && document.getElementById(key)) document.getElementById(key).value = draft[key];
   });
   checkItems.forEach(item => {
     ["Before", "After"].forEach(suffix => {
       const id = item.id + suffix;
       const cb = document.getElementById(id);
-      if(draft.checks && draft.checks[id] !== undefined) {
+      if (draft.checks && draft.checks[id] !== undefined) {
         cb.checked = draft.checks[id];
         const s = document.getElementById(id + "Status");
         s.textContent = cb.checked ? item.on : item.off;
@@ -235,7 +253,7 @@ function loadDraft() {
 }
 
 function clearDraft() {
-  if(confirm("すべてリセットしますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+  if (confirm("下書きをすべて消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
 }
 
 document.getElementById('recordForm').addEventListener('submit', async e => {
@@ -250,14 +268,12 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
     methodBefore: document.getElementById('methodBefore').value,
     distStart: document.getElementById('distStart').value,
     alcBefore: document.getElementById('alcBefore').value,
-    
     dateAfter: document.getElementById('dateAfter').value,
     endTime: document.getElementById('endTime').value,
     methodAfter: document.getElementById('methodAfter').value,
     distEnd: document.getElementById('distEnd').value,
     distTotal: document.getElementById('distTotal').value,
     alcAfter: document.getElementById('alcAfter').value,
-    
     memo: document.getElementById('memo').value,
     driver: "屋比久悟",
     carNo: "足立481り9586"
@@ -269,12 +285,13 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
 
   try {
     await fetch(webAppUrl, { method: "POST", mode: "no-cors", body: formData });
-    alert("送信完了！");
+    alert("一括送信が完了しました！お疲れ様でした。");
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   } catch (err) {
-    alert("送信失敗");
+    alert("通信エラー。設定やURLを確認してください。");
     submitBtn.disabled = false;
+    submitBtn.textContent = "全データを一括送信";
   }
 });
 
