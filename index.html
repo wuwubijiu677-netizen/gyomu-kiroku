@@ -181,10 +181,49 @@ document.getElementById('callTypeToggle').addEventListener('change', e => {
   document.getElementById('callTypeResult').textContent = e.target.checked ? "業務後" : "業務前";
 });
 
-document.getElementById('recordForm').addEventListener('submit', e => {
+// 送信処理（ここをURLに合わせて書き換え）
+document.getElementById('recordForm').addEventListener('submit', async e => {
   e.preventDefault();
-  alert("点呼記録を送信しました。");
-  location.reload(); 
+  
+  // 送信ボタンを無効化（連打防止）
+  const submitBtn = e.target.querySelector('.btn-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "保存中...";
+
+  // データの収集
+  const data = {
+    date: document.getElementById('date').value,
+    driver: "屋比久悟",
+    carNo: "足立481り9586",
+    distStart: document.getElementById('distStart').value,
+    distEnd: document.getElementById('distEnd').value,
+    distTotal: document.getElementById('distTotal').value,
+    callTime: document.getElementById('callTime').value,
+    callType: document.getElementById('callTypeToggle').checked ? "業務後" : "業務前",
+    callMethod: document.getElementById('callMethod').value,
+    executor: "屋比久悟",
+    alcValue: document.getElementById('alcValue').value,
+    memo: document.getElementById('memo').value
+  };
+
+  try {
+    // 【重要】ここにステップ3でコピーしたURLを貼り付けます
+    const webAppUrl = "あなたのGASのURLをここに貼り付け";
+
+    await fetch(webAppUrl, {
+      method: "POST",
+      mode: "no-cors", // GASへの簡易送信
+      body: JSON.stringify(data)
+    });
+
+    alert("スプレッドシートに保存しました！");
+    location.reload(); 
+
+  } catch (error) {
+    alert("保存に失敗しました。ネット接続を確認してください。");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "登録を完了する";
+  }
 });
 
 window.onload = init;
