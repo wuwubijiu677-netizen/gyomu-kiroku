@@ -181,7 +181,7 @@ document.getElementById('callTypeToggle').addEventListener('change', e => {
   document.getElementById('callTypeResult').textContent = e.target.checked ? "業務後" : "業務前";
 });
 
-// 送信処理（ここをURLに合わせて書き換え）
+// 送信処理（安定版：URLSearchParams方式）
 document.getElementById('recordForm').addEventListener('submit', async e => {
   e.preventDefault();
   
@@ -207,25 +207,30 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
   };
 
   try {
-    // 【重要】ここにステップ3でコピーしたURLを貼り付けます
+    // GASのURL
     const webAppUrl = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
+
+    // GASで確実に受け取るためのデータ整形
+    const formData = new URLSearchParams();
+    formData.append('contents', JSON.stringify(data));
 
     await fetch(webAppUrl, {
       method: "POST",
-      mode: "no-cors", // GASへの簡易送信
-      body: JSON.stringify(data)
+      mode: "no-cors", 
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData
     });
 
-    alert("スプレッドシートに保存しました！");
+    alert("送信完了しました！\n（反映まで数秒かかる場合があります）");
     location.reload(); 
 
   } catch (error) {
+    console.error("Error:", error);
     alert("保存に失敗しました。ネット接続を確認してください。");
     submitBtn.disabled = false;
     submitBtn.textContent = "登録を完了する";
   }
 });
-
 window.onload = init;
 </script>
 </body>
