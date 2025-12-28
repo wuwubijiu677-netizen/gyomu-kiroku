@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム（運行前後一括版）</title>
+  <title>業務記録システム（日付跨ぎ対応版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
@@ -17,6 +17,8 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
+    .field-group { display: flex; gap: 10px; }
+    .field-group > div { flex: 1; }
     input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
     .readonly-field { background: #f0f0f0; color: #666; }
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
@@ -40,20 +42,20 @@
 <div class="container">
   <div class="header"><h2>業務記録（屋比久 悟）</h2></div>
   <div class="step-bar">
-    <div class="step id-step1 active">1. 運行前（出勤）</div>
-    <div class="step id-step2">2. 運行後（退勤）</div>
+    <div class="step id-step1 active">1. 運行前入力</div>
+    <div class="step id-step2">2. 運行後入力・送信</div>
   </div>
 
   <form id="recordForm">
     <div id="page1" class="page active">
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>日付</label><input type="date" id="date" required></div>
-        <div style="flex:1;"><label>開始時間</label><input type="time" id="startTime" required></div>
+      <div class="field-group">
+        <div><label>運行前日付</label><input type="date" id="dateBefore" required></div>
+        <div><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
       
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
-        <div style="flex:1;"><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
+      <div class="field-group">
+        <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
+        <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
 
       <label>走行距離計（運行前） [km]</label>
@@ -73,14 +75,19 @@
     </div>
 
     <div id="page2" class="page">
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>完了時間</label><input type="time" id="endTime" required></div>
-        <div style="flex:1;"><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
+      <div class="field-group">
+        <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
+        <div><label>完了時間</label><input type="time" id="endTime" required></div>
       </div>
 
-      <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
-        <div style="flex:1;"><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
+      <div class="field-group">
+        <div><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
+        <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
+      </div>
+
+      <div class="field-group">
+        <div><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
+        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
       </div>
 
       <label>アルコールチェック（運行後） [mg/L]</label>
@@ -96,20 +103,20 @@
 
       <div class="btn-group">
         <button type="button" onclick="prevPage()">戻る</button>
-        <button type="submit" class="btn-submit">一括データを送信</button>
+        <button type="submit" class="btn-submit">全データを一括送信</button>
       </div>
-      <button type="button" class="btn-clear" onclick="clearDraft()">下書きを消去</button>
+      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット</button>
     </div>
   </form>
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_draft_v3';
+const STORAGE_KEY = 'daily_report_draft_v4';
 const checkItems = [
-  { id: "alcohol", label: "アルコール検知器の使用", on: "使用", off: "未使用" },
+  { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
   { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
   { id: "condition", label: "体調確認", on: "良好", off: "不調" },
-  { id: "drunk", label: "酒気帯びの有無", on: "無", off: "有" },
+  { id: "drunk", label: "酒気帯び有無", on: "無", off: "有" },
   { id: "tire", label: "タイヤ点検", on: "正常", off: "異常" },
   { id: "light", label: "灯火類点検", on: "正常", off: "異常" },
   { id: "oil", label: "油脂類点検", on: "正常", off: "異常" }
@@ -133,8 +140,11 @@ function prevPage() {
 
 function init() {
   const now = new Date();
-  document.getElementById('date').value = now.toISOString().split('T')[0];
+  const dateStr = now.toISOString().split('T')[0];
   const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+
+  document.getElementById('dateBefore').value = dateStr;
+  document.getElementById('dateAfter').value = dateStr;
   document.getElementById('startTime').value = timeStr;
   document.getElementById('endTime').value = timeStr;
 
@@ -143,7 +153,8 @@ function init() {
 
   loadDraft();
 
-  ['distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'].forEach(id => {
+  const inputs = ['dateBefore', 'dateAfter', 'distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'];
+  inputs.forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
       if(id.includes('dist')) calculateTotal();
       saveDraft();
@@ -181,7 +192,8 @@ function calculateTotal() {
 
 function saveDraft() {
   const draft = {
-    date: document.getElementById('date').value,
+    dateBefore: document.getElementById('dateBefore').value,
+    dateAfter: document.getElementById('dateAfter').value,
     startTime: document.getElementById('startTime').value,
     endTime: document.getElementById('endTime').value,
     methodBefore: document.getElementById('methodBefore').value,
@@ -233,33 +245,35 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
   submitBtn.textContent = "送信中...";
 
   const data = {
-    date: document.getElementById('date').value,
+    dateBefore: document.getElementById('dateBefore').value,
     startTime: document.getElementById('startTime').value,
-    endTime: document.getElementById('endTime').value,
     methodBefore: document.getElementById('methodBefore').value,
-    methodAfter: document.getElementById('methodAfter').value,
     distStart: document.getElementById('distStart').value,
+    alcBefore: document.getElementById('alcBefore').value,
+    
+    dateAfter: document.getElementById('dateAfter').value,
+    endTime: document.getElementById('endTime').value,
+    methodAfter: document.getElementById('methodAfter').value,
     distEnd: document.getElementById('distEnd').value,
     distTotal: document.getElementById('distTotal').value,
-    alcBefore: document.getElementById('alcBefore').value,
     alcAfter: document.getElementById('alcAfter').value,
+    
     memo: document.getElementById('memo').value,
     driver: "屋比久悟",
-    carNo: "足立481り9586",
-    executor: "屋比久悟"
+    carNo: "足立481り9586"
   };
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbzrNQRDBILN1HUIYXHbdZ2Ph2sIvDCaeyf9NEWWlYw-VZuQ3FNQvR0-4jvMLgQVt6TPBg/exec";
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
   const formData = new URLSearchParams();
   formData.append('contents', JSON.stringify(data));
 
   try {
     await fetch(webAppUrl, { method: "POST", mode: "no-cors", body: formData });
-    alert("送信完了！お疲れ様でした。");
+    alert("送信完了！");
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   } catch (err) {
-    alert("エラー発生");
+    alert("送信失敗");
     submitBtn.disabled = false;
   }
 });
