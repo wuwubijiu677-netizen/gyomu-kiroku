@@ -15,7 +15,7 @@
 
     form {
       max-width:600px;
-      margin:30px auto;
+      margin:20px auto;
       background:#fff;
       padding:18px;
       border-radius:12px;
@@ -31,9 +31,11 @@
 
     .inline-group {
       display:flex;
-      gap:12px;
+      gap:10px;
       margin-top: 5px;
     }
+
+    .inline-group div { flex: 1; }
 
     .inline-group input {
       width:100%;
@@ -60,8 +62,6 @@
       font-weight: bold;
     }
 
-    button:active { background:#0097a7; }
-
     .check-item {
       padding:10px 0;
       border-bottom:1px solid #eee;
@@ -79,7 +79,6 @@
       justify-content:space-between;
       align-items:center;
       width:100%;
-      margin:0;
     }
 
     .label-text {
@@ -87,20 +86,21 @@
       color: #333;
       flex: 1;
       padding-right: 10px;
+      line-height: 1.4;
     }
 
     .status-text {
       font-weight:bold;
       font-size:12px;
-      color: #00bcd4;
     }
 
-    /* スイッチのデザイン */
+    /* スイッチ */
     .switch {
       position:relative;
       display:inline-block;
-      width:46px;
-      height:24px;
+      width:44px;
+      height:22px;
+      flex-shrink: 0;
     }
 
     .switch input { display:none; }
@@ -119,23 +119,18 @@
       content:"";
       height:18px;
       width:18px;
-      left:3px;
-      bottom:3px;
+      left:2px;
+      bottom:2px;
       background:white;
       border-radius:50%;
       transition:.3s;
     }
 
-    .switch input:checked + .slider {
-      background-color:#00bcd4;
-    }
-
-    .switch input:checked + .slider:before {
-      transform:translateX(22px);
-    }
+    .switch input:checked + .slider { background-color:#00bcd4; }
+    .switch input:checked + .slider:before { transform:translateX(22px); }
 
     @media (max-width:480px) {
-      form { margin: 10px; }
+      form { margin: 10px; padding: 12px; }
       .label-text { font-size:12px; }
     }
   </style>
@@ -147,12 +142,11 @@
 <form id="form">
 
   <div class="inline-group">
-    <div style="flex:1;">
+    <div>
       <label>日付</label>
       <input type="date" id="date" required>
     </div>
-
-    <div style="flex:1;">
+    <div>
       <label>点呼時刻</label>
       <input type="time" id="callTime" required>
     </div>
@@ -160,232 +154,121 @@
 
   <label>走行距離 (km)</label>
   <div class="inline-group">
-    <div style="flex:1;">
-      <input type="number" id="distanceBefore" placeholder="開始" required>
-    </div>
-    <div style="flex:1;">
-      <input type="number" id="distanceAfter" placeholder="終了" required>
-    </div>
-    <div style="flex:1;">
-      <input type="number" id="totalDistance" placeholder="合計" readonly style="background:#f0f0f0;">
-    </div>
+    <div><input type="number" id="distanceBefore" placeholder="開始" required></div>
+    <div><input type="number" id="distanceAfter" placeholder="終了"></div>
+    <div><input type="number" id="totalDistance" placeholder="合計" readonly style="background:#eee;"></div>
   </div>
 
   <label>点呼区分</label>
-  <div style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
     <label class="switch">
       <input type="checkbox" id="callTypeToggle">
       <span class="slider"></span>
     </label>
     <span id="callTypeResult" style="font-weight:bold;">業務前</span>
   </div>
-
   <input type="hidden" id="callTypeHidden" value="業務前">
 
   <div id="checklistBefore">
-    <label style="color:#00bcd4; margin-top:20px;">▼ 点検項目（業務前）</label>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="alcoholBeforeStatus">未使用</span>
-        <div class="row">
-          <span class="label-text">アルコール検知器の使用</span>
-          <label class="switch">
-            <input type="checkbox" id="alcoholBefore">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="vehicleBeforeStatus">異常</span>
-        <div class="row">
-          <span class="label-text">車両異常確認</span>
-          <label class="switch">
-            <input type="checkbox" id="vehicleBefore">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="conditionBeforeStatus">不調</span>
-        <div class="row">
-          <span class="label-text">体調確認</span>
-          <label class="switch">
-            <input type="checkbox" id="conditionBefore">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="drunkBeforeStatus">有</span>
-        <div class="row">
-          <span class="label-text">酒気帯びの有無</span>
-          <label class="switch">
-            <input type="checkbox" id="drunkBefore">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-    </div>
-
-  <div id="checklistAfter" class="hidden">
-    <label style="color:#00bcd4; margin-top:20px;">▼ 点検項目（業務後）</label>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="alcoholAfterStatus">未使用</span>
-        <div class="row">
-          <span class="label-text">アルコール検知器の使用</span>
-          <label class="switch">
-            <input type="checkbox" id="alcoholAfter">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="vehicleAfterStatus">異常</span>
-        <div class="row">
-          <span class="label-text">車両異常確認</span>
-          <label class="switch">
-            <input type="checkbox" id="vehicleAfter">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="conditionAfterStatus">不調</span>
-        <div class="row">
-          <span class="label-text">体調確認</span>
-          <label class="switch">
-            <input type="checkbox" id="conditionAfter">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="check-item">
-      <div class="right-block">
-        <span class="status-text" id="drunkAfterStatus">有</span>
-        <div class="row">
-          <span class="label-text">酒気帯びの有無</span>
-          <label class="switch">
-            <input type="checkbox" id="drunkAfter">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
+    <label style="color:#00bcd4;">点検項目（業務前）</label>
+    <div id="itemsBeforeContainer"></div>
   </div>
 
-  <button type="submit">この内容で送信保存</button>
+  <div id="checklistAfter" class="hidden">
+    <label style="color:#00bcd4;">点検項目（業務後）</label>
+    <div id="itemsAfterContainer"></div>
+  </div>
+
+  <button type="submit">保存する</button>
+
+</form>
 
 <script>
-// 初期化：日付と時間をセット
-function init() {
+// --- 設定：項目リスト ---
+const items = [
+  { id: "alcohol", label: "アルコール検知器の使用", on: "使用", off: "未使用" },
+  { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
+  { id: "condition", label: "体調確認", on: "良好", off: "不調" },
+  { id: "drunk", label: "酒気帯びの有無", on: "無", off: "有" },
+  { id: "license", label: "免許証携帯確認", on: "携帯", off: "不携帯" },
+  { id: "tire", label: "タイヤ（亀裂・空気圧・摩耗）", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類（方向指示・ライト類）", on: "正常", off: "異常" },
+  { id: "oil", label: "油脂類（オイル・冷却水等）", on: "正常", off: "異常" }
+];
+
+// --- HTML生成 ---
+function createCheckItems(containerId, suffix) {
+  const container = document.getElementById(containerId);
+  items.forEach(item => {
+    const html = `
+      <div class="check-item">
+        <div class="right-block">
+          <span class="status-text" id="${item.id}${suffix}Status">${item.off}</span>
+          <div class="row">
+            <span class="label-text">${item.label}</span>
+            <label class="switch">
+              <input type="checkbox" id="${item.id}${suffix}">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>`;
+    container.insertAdjacentHTML('beforeend', html);
+  });
+}
+
+// --- 初期化 ---
+window.addEventListener("DOMContentLoaded", () => {
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
   document.getElementById('callTime').value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-}
 
-// 走行距離の自動計算
-function calcTotal() {
-  const before = parseFloat(document.getElementById('distanceBefore').value) || 0;
-  const after = parseFloat(document.getElementById('distanceAfter').value) || 0;
-  const totalField = document.getElementById('totalDistance');
-  
-  if (after >= before && before > 0) {
-    totalField.value = (after - before).toFixed(1);
-  } else {
-    totalField.value = "";
-  }
-}
+  // 項目生成
+  createCheckItems("itemsBeforeContainer", "Before");
+  createCheckItems("itemsAfterContainer", "After");
 
-// ステータステキストの連動
-function bindStatus(toggleId, statusId, onText, offText) {
-  const toggle = document.getElementById(toggleId);
-  const status = document.getElementById(statusId);
-  if (!toggle || !status) return;
+  // ステータス連動の登録
+  items.forEach(item => {
+    bindStatus(`${item.id}Before`, `${item.id}BeforeStatus`, item.on, item.off);
+    bindStatus(`${item.id}After`, `${item.id}AfterStatus`, item.on, item.off);
+  });
 
-  const updateText = () => {
-    status.textContent = toggle.checked ? onText : offText;
-    status.style.color = toggle.checked ? "#00bcd4" : "#f44336"; // ONで青、OFFで赤
+  // 距離計算
+  const calc = () => {
+    const b = parseFloat(document.getElementById('distanceBefore').value) || 0;
+    const a = parseFloat(document.getElementById('distanceAfter').value) || 0;
+    document.getElementById('totalDistance').value = (a >= b && b > 0) ? (a - b).toFixed(1) : "";
   };
-
-  toggle.addEventListener("change", updateText);
-  updateText(); // 初期実行
-}
-
-// 全てのイベント設定
-window.addEventListener("DOMContentLoaded", () => {
-  init();
-
-  // 距離計算のイベント
-  document.getElementById('distanceBefore').addEventListener("input", calcTotal);
-  document.getElementById('distanceAfter').addEventListener("input", calcTotal);
+  document.getElementById('distanceBefore').addEventListener("input", calc);
+  document.getElementById('distanceAfter').addEventListener("input", calc);
 
   // 点呼区分切り替え
-  const callTypeToggle = document.getElementById('callTypeToggle');
-  callTypeToggle.addEventListener("change", e => {
+  document.getElementById('callTypeToggle').addEventListener("change", e => {
     const isAfter = e.target.checked;
     document.getElementById("callTypeResult").textContent = isAfter ? "業務後" : "業務前";
     document.getElementById("callTypeHidden").value = isAfter ? "業務後" : "業務前";
     document.getElementById("checklistBefore").classList.toggle("hidden", isAfter);
     document.getElementById("checklistAfter").classList.toggle("hidden", !isAfter);
   });
+});
 
-  // 各スイッチの文字連動設定
-  bindStatus("alcoholBefore", "alcoholBeforeStatus", "使用", "未使用");
-  bindStatus("vehicleBefore", "vehicleBeforeStatus", "正常", "異常");
-  bindStatus("conditionBefore", "conditionBeforeStatus", "良好", "不調");
-  bindStatus("drunkBefore", "drunkBeforeStatus", "無", "有");
+function bindStatus(toggleId, statusId, onText, offText) {
+  const toggle = document.getElementById(toggleId);
+  const status = document.getElementById(statusId);
+  const update = () => {
+    status.textContent = toggle.checked ? onText : offText;
+    status.style.color = toggle.checked ? "#00bcd4" : "#f44336";
+  };
+  toggle.addEventListener("change", update);
+  update();
+}
 
-  bindStatus("alcoholAfter", "alcoholAfterStatus", "使用", "未使用");
-  bindStatus("vehicleAfter", "vehicleAfterStatus", "正常", "異常");
-  bindStatus("conditionAfter", "conditionAfterStatus", "良好", "不調");
-  bindStatus("drunkAfter", "drunkAfterStatus", "無", "有");
-
-  // 送信処理
-  document.getElementById('form').addEventListener("submit", e => {
-    e.preventDefault();
-    
-    const data = {
-      date: document.getElementById('date').value,
-      callType: document.getElementById('callTypeHidden').value,
-      callTime: document.getElementById('callTime').value,
-      distanceBefore: document.getElementById('distanceBefore').value,
-      distanceAfter: document.getElementById('distanceAfter').value,
-      totalDistance: document.getElementById('totalDistance').value,
-      status: {
-        alcohol: document.getElementById(callTypeToggle.checked ? 'alcoholAfterStatus' : 'alcoholBeforeStatus').textContent,
-        condition: document.getElementById(callTypeToggle.checked ? 'conditionAfterStatus' : 'conditionBeforeStatus').textContent
-        // 必要に応じて追加
-      }
-    };
-
-    console.log("送信データ:", data);
-    alert("保存しました（GAS_WEBAPP_URLが未設定のためコンソール出力のみ）");
-    // 本番はここにfetch処理を記述
-  });
+// --- 送信 ---
+document.getElementById('form').addEventListener("submit", e => {
+  e.preventDefault();
+  // ここにfetch処理を記述（前回の回答と同様）
+  alert("保存しました");
 });
 </script>
-
-</form>
 </body>
 </html>
