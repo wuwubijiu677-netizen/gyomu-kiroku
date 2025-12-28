@@ -3,165 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <title>業務の記録</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-  font-family: system-ui, -apple-system;
-  background:#f9f9f9;
-  margin:0;
-}
-
-form {
-  max-width:600px;
-  margin:30px auto;
-  background:#fff;
-  padding:18px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-}
-
-label { font-weight:bold; font-size:14px; display:block; margin-top:10px; }
-
-.inline-group { display:flex; gap:12px; }
-.inline-group input {
-  width:100%;
-  height:28px;
-  font-size:14px;
-}
-
+body { font-family: system-ui; background:#f9f9f9; margin:0; }
+form { max-width:600px; margin:30px auto; background:#fff; padding:18px; border-radius:12px; }
 .hidden { display:none; }
 
-.check-item {
-  padding:6px 0;
-  border-bottom:1px solid #eee;
-}
-
-.row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.status-text { font-weight:bold; font-size:12px; }
-
-.switch {
-  position:relative;
-  width:40px;
-  height:20px;
-  display:inline-block;
-}
-
+.switch { position:relative; width:40px; height:20px; display:inline-block; }
 .switch input { display:none; }
-
-.slider {
-  position:absolute;
-  inset:0;
-  background:#ccc;
-  border-radius:20px;
-}
-
-.slider:before {
-  content:"";
-  position:absolute;
-  width:16px;
-  height:16px;
-  left:2px;
-  bottom:2px;
-  background:#fff;
-  border-radius:50%;
-  transition:.3s;
-}
-
-.switch input:checked + .slider {
-  background:#00bcd4;
-}
-
-.switch input:checked + .slider:before {
-  transform:translateX(20px);
-}
+.slider { position:absolute; inset:0; background:#ccc; border-radius:34px; }
+.slider:before { content:""; position:absolute; width:16px; height:16px; left:2px; bottom:2px; background:#fff; border-radius:50%; }
+.switch input:checked + .slider { background:#00bcd4; }
+.switch input:checked + .slider:before { transform:translateX(20px); }
 </style>
 </head>
 
 <body onload="init()">
-<h2 style="text-align:center;">業務の記録</h2>
-
 <form>
 
-<!-- 日付・時刻 -->
-<div class="inline-group">
-  <div style="flex:1;">
-    <label>日付</label>
-    <input type="date" id="date">
-  </div>
-  <div style="flex:1;">
-    <label>点呼時刻</label>
-    <input type="time" id="callTime">
-  </div>
-</div>
-
-<!-- 点呼区分 -->
 <label>点呼区分</label>
-<div style="display:flex; gap:10px; align-items:center;">
-  <label class="switch">
-    <input type="checkbox" id="callTypeToggle">
-    <span class="slider"></span>
-  </label>
-  <span id="callTypeResult">業務前</span>
-</div>
+<label class="switch">
+  <input type="checkbox" id="callTypeToggle">
+  <span class="slider"></span>
+</label>
+<span id="callTypeResult">業務前</span>
 <input type="hidden" id="callTypeHidden" value="業務前">
 
-<!-- 業務前 -->
 <div id="checklistBefore">
-  <label>点検項目（業務前）</label>
-
-  <div class="check-item">
-    <span class="status-text" id="alcoholBeforeStatus">使用</span>
-    <div class="row">
-      <span>アルコール検知器</span>
-      <label class="switch">
-        <input type="checkbox" id="alcoholBefore">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
+  <p>業務前チェック</p>
+  <label class="switch">
+    <input type="checkbox" id="alcoholBefore">
+    <span class="slider"></span>
+  </label>
+  <span id="alcoholBeforeStatus">使用</span>
 </div>
 
-<!-- 業務後 -->
 <div id="checklistAfter" class="hidden">
-  <label>点検項目（業務後）</label>
-
-  <div class="check-item">
-    <span class="status-text" id="alcoholAfterStatus">使用</span>
-    <div class="row">
-      <span>アルコール検知器</span>
-      <label class="switch">
-        <input type="checkbox" id="alcoholAfter">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
+  <p>業務後チェック</p>
+  <label class="switch">
+    <input type="checkbox" id="alcoholAfter">
+    <span class="slider"></span>
+  </label>
+  <span id="alcoholAfterStatus">使用</span>
 </div>
-
-<!-- 距離 -->
-<label>走行距離</label>
-<div class="inline-group">
-  <input id="distanceBefore" type="number" placeholder="出庫">
-  <input id="distanceAfter" type="number" placeholder="帰庫">
-</div>
-<input id="totalDistance" type="number" placeholder="走行距離" readonly>
 
 </form>
 
 <script>
 function init() {
 
-  /* ===== 日付・時刻初期化 ===== */
-  const now = new Date();
-  date.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-  callTime.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  /* ===== 点呼区分切り替え ===== */
+  const callTypeToggle = document.getElementById("callTypeToggle");
+  const callTypeResult = document.getElementById("callTypeResult");
+  const callTypeHidden = document.getElementById("callTypeHidden");
+  const checklistBefore = document.getElementById("checklistBefore");
+  const checklistAfter = document.getElementById("checklistAfter");
 
-  /* ===== 点呼区分切替 ===== */
   callTypeToggle.addEventListener("change", e => {
     const isAfter = e.target.checked;
     callTypeResult.textContent = isAfter ? "業務後" : "業務前";
@@ -170,18 +68,19 @@ function init() {
     checklistAfter.classList.toggle("hidden", !isAfter);
   });
 
-  /* ===== ステータス切替 ===== */
+  /* ===== ステータス表示 ===== */
   function bindStatus(toggleId, statusId, onText, offText) {
-    document.getElementById(toggleId).addEventListener("change", e => {
-      document.getElementById(statusId).textContent =
-        e.target.checked ? onText : offText;
+    const toggle = document.getElementById(toggleId);
+    const status = document.getElementById(statusId);
+    toggle.addEventListener("change", e => {
+      status.textContent = e.target.checked ? onText : offText;
     });
   }
 
   bindStatus("alcoholBefore","alcoholBeforeStatus","使用","未使用");
   bindStatus("alcoholAfter","alcoholAfterStatus","使用","未使用");
 
-  /* ===== 距離計算（変更なし） ===== */
+  /* ===== 距離計算（完全に変更なし） ===== */
   function calcTotal() {
     const before = Number(distanceBefore.value);
     const after = Number(distanceAfter.value);
@@ -192,10 +91,15 @@ function init() {
     }
   }
 
-  distanceBefore.addEventListener("input", calcTotal);
-  distanceAfter.addEventListener("input", calcTotal);
+  const distanceBefore = document.getElementById("distanceBefore");
+  const distanceAfter  = document.getElementById("distanceAfter");
+  const totalDistance  = document.getElementById("totalDistance");
+
+  if (distanceBefore && distanceAfter && totalDistance) {
+    distanceBefore.addEventListener("input", calcTotal);
+    distanceAfter.addEventListener("input", calcTotal);
+  }
 }
 </script>
-
 </body>
 </html>
