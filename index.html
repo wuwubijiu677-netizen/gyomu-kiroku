@@ -2,47 +2,32 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム（運行前後・一括保存）</title>
+  <title>業務記録システム（運行前後一括版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
     body { font-family: system-ui, -apple-system; background: var(--bg); margin: 0; color: var(--text); padding-bottom: 40px; }
     .container { max-width: 500px; margin: 0 auto; background: #fff; min-height: 100vh; display: flex; flex-direction: column; }
     .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; }
-    
-    /* ステップバー */
     .step-bar { display: flex; background: #e0f7fa; padding: 10px 0; border-bottom: 1px solid #b2ebf2; }
     .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; }
     .step.active { color: var(--primary); }
-
     form { padding: 20px; flex: 1; }
     .page { display: none; animation: fadeIn 0.3s ease; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
     input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
     .readonly-field { background: #f0f0f0; color: #666; }
-    
-    /* 区分切り替えトグル */
-    .type-toggle-container { background: #f0f0f0; border-radius: 10px; padding: 5px; display: flex; margin-top: 10px; }
-    .type-btn { flex: 1; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; background: transparent; color: #666; }
-    .type-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-    /* 点検項目 */
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .label-text { font-size: 13px; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
-
-    /* スイッチ */
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
-
     .btn-group { margin-top: 35px; display: flex; gap: 12px; }
     button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
     .btn-next { background: var(--primary); color: #fff; }
@@ -54,53 +39,55 @@
 
 <div class="container">
   <div class="header"><h2>業務記録（屋比久 悟）</h2></div>
-  
   <div class="step-bar">
-    <div class="step id-step1 active">STEP 1. 運行前入力</div>
-    <div class="step id-step2">STEP 2. 運行後・送信</div>
+    <div class="step id-step1 active">1. 運行前（出勤）</div>
+    <div class="step id-step2">2. 運行後（退勤）</div>
   </div>
 
   <form id="recordForm">
     <div id="page1" class="page active">
-      <label>基本情報</label>
       <div style="display:flex; gap:10px;">
-        <input type="text" value="屋比久悟" class="readonly-field" readonly>
-        <input type="text" value="足立481り9586" class="readonly-field" readonly>
+        <div style="flex:1;"><label>日付</label><input type="date" id="date" required></div>
+        <div style="flex:1;"><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
       
-      <label>日付</label>
-      <input type="date" id="date" required>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;"><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
+        <div style="flex:1;"><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
+      </div>
 
       <label>走行距離計（運行前） [km]</label>
-      <input type="number" id="distStart" placeholder="開始距離を入力" step="0.1" required>
+      <input type="number" id="distStart" placeholder="開始距離" step="0.1" required>
+
+      <label>アルコールチェック（運行前） [mg/L]</label>
+      <input type="number" id="alcBefore" placeholder="0.00" step="0.01">
 
       <div class="check-list-container">
-        <label style="color:var(--primary);">▼ 運行前 点呼項目</label>
+        <label style="color:var(--primary);">▼ 運行前 点検項目</label>
         <div id="itemsBeforeContainer"></div>
       </div>
 
       <div class="btn-group">
-        <button type="button" class="btn-next" onclick="nextPage()">次へ進む（運行後入力へ） ＞</button>
+        <button type="button" class="btn-next" onclick="nextPage()">次へ（運行後入力へ） ＞</button>
       </div>
     </div>
 
     <div id="page2" class="page">
-      <label>走行距離計（運行後） [km]</label>
-      <input type="number" id="distEnd" placeholder="終了距離を入力" step="0.1" required>
-
-      <label>総走行距離 [km]</label>
-      <input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算">
-
       <div style="display:flex; gap:10px;">
-        <div style="flex:1;"><label>完了時間</label><input type="time" id="callTime" required></div>
-        <div style="flex:1;"><label>点呼執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
+        <div style="flex:1;"><label>完了時間</label><input type="time" id="endTime" required></div>
+        <div style="flex:1;"><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
       </div>
 
-      <label>アルコールチェック (mg/L)</label>
-      <input type="number" id="alcValue" placeholder="0.00" step="0.01">
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;"><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
+        <div style="flex:1;"><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
+      </div>
+
+      <label>アルコールチェック（運行後） [mg/L]</label>
+      <input type="number" id="alcAfter" placeholder="0.00" step="0.01">
 
       <div class="check-list-container">
-        <label style="color:var(--primary);">▼ 運行後 点呼項目</label>
+        <label style="color:var(--primary);">▼ 運行後 点検項目</label>
         <div id="itemsAfterContainer"></div>
       </div>
 
@@ -111,27 +98,25 @@
         <button type="button" onclick="prevPage()">戻る</button>
         <button type="submit" class="btn-submit">一括データを送信</button>
       </div>
-      
-      <button type="button" class="btn-clear" onclick="clearDraft()">入力をリセットする</button>
+      <button type="button" class="btn-clear" onclick="clearDraft()">下書きを消去</button>
     </div>
   </form>
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_draft_v2';
+const STORAGE_KEY = 'daily_report_draft_v3';
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器の使用", on: "使用", off: "未使用" },
   { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
   { id: "condition", label: "体調確認", on: "良好", off: "不調" },
   { id: "drunk", label: "酒気帯びの有無", on: "無", off: "有" },
-  { id: "tire", label: "タイヤ（亀裂・空気圧・摩耗）", on: "正常", off: "異常" },
-  { id: "light", label: "灯火類（ライト・ウィンカー）", on: "正常", off: "異常" },
-  { id: "oil", label: "油脂類（オイル・冷却水等）", on: "正常", off: "異常" }
+  { id: "tire", label: "タイヤ点検", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類点検", on: "正常", off: "異常" },
+  { id: "oil", label: "油脂類点検", on: "正常", off: "異常" }
 ];
 
 function nextPage() {
-  const start = document.getElementById('distStart').value;
-  if(!start) { alert("運行前の距離を入力してください"); return; }
+  if(!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
   saveDraft();
   document.getElementById('page1').classList.remove('active');
   document.getElementById('page2').classList.add('active');
@@ -149,16 +134,21 @@ function prevPage() {
 function init() {
   const now = new Date();
   document.getElementById('date').value = now.toISOString().split('T')[0];
-  document.getElementById('callTime').value = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('startTime').value = timeStr;
+  document.getElementById('endTime').value = timeStr;
 
-  // 点検項目の生成（BeforeとAfter両方）
   renderItems("itemsBeforeContainer", "Before");
   renderItems("itemsAfterContainer", "After");
 
   loadDraft();
 
-  document.getElementById('distStart').addEventListener('input', calculateTotal);
-  document.getElementById('distEnd').addEventListener('input', calculateTotal);
+  ['distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      if(id.includes('dist')) calculateTotal();
+      saveDraft();
+    });
+  });
 }
 
 function renderItems(containerId, suffix) {
@@ -169,12 +159,11 @@ function renderItems(containerId, suffix) {
     container.insertAdjacentHTML('beforeend', `
       <div class="check-item">
         <span class="label-text">${item.label}</span>
-        <div style="text-align:right">
+        <div>
           <span class="status-text" id="${statusId}">${item.off}</span>
           <label class="switch"><input type="checkbox" id="${inputId}"><span class="slider"></span></label>
         </div>
       </div>`);
-    
     document.getElementById(inputId).addEventListener('change', (e) => {
       const s = document.getElementById(statusId);
       s.textContent = e.target.checked ? item.on : item.off;
@@ -188,15 +177,19 @@ function calculateTotal() {
   const s = parseFloat(document.getElementById('distStart').value) || 0;
   const e = parseFloat(document.getElementById('distEnd').value) || 0;
   document.getElementById('distTotal').value = (e - s > 0) ? (e - s).toFixed(1) : "0.0";
-  saveDraft();
 }
 
 function saveDraft() {
   const draft = {
     date: document.getElementById('date').value,
+    startTime: document.getElementById('startTime').value,
+    endTime: document.getElementById('endTime').value,
+    methodBefore: document.getElementById('methodBefore').value,
+    methodAfter: document.getElementById('methodAfter').value,
     distStart: document.getElementById('distStart').value,
     distEnd: document.getElementById('distEnd').value,
-    alcValue: document.getElementById('alcValue').value,
+    alcBefore: document.getElementById('alcBefore').value,
+    alcAfter: document.getElementById('alcAfter').value,
     memo: document.getElementById('memo').value,
     checks: {}
   };
@@ -211,31 +204,26 @@ function loadDraft() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return;
   const draft = JSON.parse(saved);
-  
-  document.getElementById('date').value = draft.date || document.getElementById('date').value;
-  document.getElementById('distStart').value = draft.distStart || "";
-  document.getElementById('distEnd').value = draft.distEnd || "";
-  document.getElementById('alcValue').value = draft.alcValue || "";
-  document.getElementById('memo').value = draft.memo || "";
-  
+  Object.keys(draft).forEach(key => {
+    if(key !== 'checks' && document.getElementById(key)) document.getElementById(key).value = draft[key];
+  });
   checkItems.forEach(item => {
     ["Before", "After"].forEach(suffix => {
       const id = item.id + suffix;
       const cb = document.getElementById(id);
-      cb.checked = draft.checks ? draft.checks[id] : false;
-      const s = document.getElementById(id + "Status");
-      s.textContent = cb.checked ? item.on : item.off;
-      s.style.color = cb.checked ? "#00bcd4" : "#f44336";
+      if(draft.checks && draft.checks[id] !== undefined) {
+        cb.checked = draft.checks[id];
+        const s = document.getElementById(id + "Status");
+        s.textContent = cb.checked ? item.on : item.off;
+        s.style.color = cb.checked ? "#00bcd4" : "#f44336";
+      }
     });
   });
   calculateTotal();
 }
 
 function clearDraft() {
-  if(confirm("下書きをすべて消去しますか？")) {
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  }
+  if(confirm("すべてリセットしますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
 }
 
 document.getElementById('recordForm').addEventListener('submit', async e => {
@@ -246,18 +234,19 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
 
   const data = {
     date: document.getElementById('date').value,
-    driver: "屋比久悟",
-    carNo: "足立481り9586",
+    startTime: document.getElementById('startTime').value,
+    endTime: document.getElementById('endTime').value,
+    methodBefore: document.getElementById('methodBefore').value,
+    methodAfter: document.getElementById('methodAfter').value,
     distStart: document.getElementById('distStart').value,
     distEnd: document.getElementById('distEnd').value,
     distTotal: document.getElementById('distTotal').value,
-    callTime: document.getElementById('callTime').value,
-    executor: "屋比久悟",
-    alcValue: document.getElementById('alcValue').value,
+    alcBefore: document.getElementById('alcBefore').value,
+    alcAfter: document.getElementById('alcAfter').value,
     memo: document.getElementById('memo').value,
-    // チェック項目の送信データ（必要に応じてスプレッドシートの列を増やしてください）
-    beforeChecks: checkItems.map(i => document.getElementById(i.id+"Before").checked ? i.on : i.off).join(','),
-    afterChecks: checkItems.map(i => document.getElementById(i.id+"After").checked ? i.on : i.off).join(',')
+    driver: "屋比久悟",
+    carNo: "足立481り9586",
+    executor: "屋比久悟"
   };
 
   const webAppUrl = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
@@ -266,11 +255,11 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
 
   try {
     await fetch(webAppUrl, { method: "POST", mode: "no-cors", body: formData });
-    alert("本日の全記録を送信しました。お疲れ様でした！");
+    alert("送信完了！お疲れ様でした。");
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   } catch (err) {
-    alert("送信に失敗しました。");
+    alert("エラー発生");
     submitBtn.disabled = false;
   }
 });
