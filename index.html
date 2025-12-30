@@ -2,48 +2,61 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム（詳細点検版）</title>
+  <title>業務記録システム</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/t-okada/asset/main/hibiscus_bw.png">
+  <meta name="apple-mobile-web-app-title" content="業務記録">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
     body { font-family: system-ui, -apple-system; background: var(--bg); margin: 0; color: var(--text); padding-bottom: 40px; }
     .container { max-width: 500px; margin: 0 auto; background: #fff; min-height: 100vh; display: flex; flex-direction: column; }
-    .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; }
+    .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header h2 { margin: 0; font-size: 1.2rem; }
+
     .step-bar { display: flex; background: #e0f7fa; padding: 10px 0; border-bottom: 1px solid #b2ebf2; }
-    .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; }
+    .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; position: relative; }
     .step.active { color: var(--primary); }
+
     form { padding: 20px; flex: 1; }
     .page { display: none; animation: fadeIn 0.3s ease; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
     .field-group { display: flex; gap: 10px; }
     .field-group > div { flex: 1; }
     input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-    .readonly-field { background: #f0f0f0; color: #666; }
+    .readonly-field { background: #f0f0f0; color: #666; border-color: #eee; }
+
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .label-text { font-size: 13px; flex: 1; padding-right: 10px; line-height: 1.4; }
+    .label-text { font-size: 12px; line-height: 1.4; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
+
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
+
     .btn-group { margin-top: 35px; display: flex; gap: 12px; }
-    button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    .btn-next { background: var(--primary); color: #fff; }
-    .btn-submit { background: #4caf50; color: #fff; }
-    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 8px; margin-top: 20px; border-radius: 8px; border:none; width:100%; }
+    button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-next { background: var(--primary); color: #fff; box-shadow: 0 4px 0 #0097a7; }
+    .btn-prev { background: #eee; color: #666; }
+    .btn-submit { background: #4caf50; color: #fff; box-shadow: 0 4px 0 #388e3c; }
+    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 10px; margin-top: 30px; border-radius: 8px; border:none; width:100%; }
+    button:active { transform: translateY(2px); box-shadow: none; }
   </style>
-  <link rel="apple-touch-icon" href="https://i.ibb.co/L6WvF6L/hibiscus-bw.png">
-<meta name="apple-mobile-web-app-title" content="業務記録">
 </head>
 <body>
 
 <div class="container">
   <div class="header"><h2>業務記録（屋比久 悟）</h2></div>
+  
   <div class="step-bar">
     <div class="step id-step1 active">1. 運行前入力</div>
     <div class="step id-step2">2. 運行後入力・一括送信</div>
@@ -62,7 +75,7 @@
       </div>
 
       <label>走行距離計（運行前） [km]</label>
-      <input type="number" id="distStart" placeholder="開始距離" step="0.1" required>
+      <input type="number" id="distStart" placeholder="開始距離を入力" step="0.1" required>
 
       <label>アルコールチェック（運行前） [mg/L]</label>
       <input type="number" id="alcBefore" placeholder="0.00" step="0.01">
@@ -90,7 +103,7 @@
 
       <div class="field-group">
         <div><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
-        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
+        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算"></div>
       </div>
 
       <label>アルコールチェック（運行後） [mg/L]</label>
@@ -105,23 +118,23 @@
       <textarea id="memo" placeholder="異常や連絡事項があれば記入" rows="3"></textarea>
 
       <div class="btn-group">
-        <button type="button" onclick="prevPage()">戻る</button>
+        <button type="button" onclick="prevPage()" class="btn-prev">戻る</button>
         <button type="submit" class="btn-submit">全データを一括送信</button>
       </div>
-      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット</button>
+      
+      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット（最初からやり直し）</button>
     </div>
   </form>
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_final_v5';
-// 点検項目の詳細化
+const STORAGE_KEY = 'daily_report_final_v10';
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
-  { id: "tire", label: "タイヤ点検（空気圧・亀裂・損傷・摩耗・取付状態）", on: "正常", off: "異常" },
-  { id: "light", label: "灯火類点検（前照灯・方向指示・非常点滅・制動灯・後退灯・尾灯）", on: "正常", off: "異常" },
-  { id: "oil", label: "油脂類点検（ブレーキ液・パワステ・エンジンオイル・冷却水）", on: "正常", off: "異常" },
-  { id: "vehicle", label: "車両異常確認（異音・バッテリー・ベルト類）", on: "正常", off: "異常" },
+  { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付状態）", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類（前照灯・指示器・非常点滅・制動・後退・尾灯）", on: "正常", off: "異常" },
+  { id: "oil", label: "油脂類（ブレーキ液・パワステ・エンジン・冷却水）", on: "正常", off: "異常" },
+  { id: "vehicle", label: "車両異常（異音・バッテリー・ベルト類）", on: "正常", off: "異常" },
   { id: "condition", label: "体調確認（睡眠不足・疾病・疲労等）", on: "良好", off: "不調" },
   { id: "drunk", label: "酒気帯び有無", on: "無", off: "有" },
   { id: "license", label: "免許証携帯確認", on: "携帯", off: "不携帯" }
@@ -137,6 +150,7 @@ function init() {
   document.getElementById('dateAfter').value = dateStr;
   document.getElementById('endTime').value = timeStr;
 
+  // 深夜（0時〜5時）は運行前日付を昨日にセット
   if (now.getHours() < 5) {
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
@@ -145,7 +159,6 @@ function init() {
 
   renderItems("itemsBeforeContainer", "Before");
   renderItems("itemsAfterContainer", "After");
-
   loadDraft();
 
   const inputs = ['dateBefore', 'dateAfter', 'distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'];
@@ -275,17 +288,19 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
     carNo: "足立481り9586"
   };
 
-  const webAppUrl = "あなたのGASデプロイURLをここに貼り付け";
+  // 【重要】ここにGASのウェブアプリURLを貼り付けてください
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
+
   const formData = new URLSearchParams();
   formData.append('contents', JSON.stringify(data));
 
   try {
     await fetch(webAppUrl, { method: "POST", mode: "no-cors", body: formData });
-    alert("一括送信が完了しました！お疲れ様でした。");
+    alert("一括送信が完了しました！\nお疲れ様でした。");
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   } catch (err) {
-    alert("通信エラー。設定やURLを確認してください。");
+    alert("通信エラー。URLが正しいか、GASの設定（全員に公開）を確認してください。");
     submitBtn.disabled = false;
     submitBtn.textContent = "全データを一括送信";
   }
