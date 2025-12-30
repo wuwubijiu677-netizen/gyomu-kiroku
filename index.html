@@ -5,7 +5,7 @@
   <title>業務記録（屋比久 悟）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   
-  <link rel="apple-touch-icon" href="https://i.ibb.co/L6WvF6L/hibiscus-bw.png">
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/t-okada/asset/main/hibiscus_bw.png">
   <meta name="apple-mobile-web-app-title" content="業務記録">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -67,7 +67,7 @@
       <label>アルコールチェック（前） [mg/L]</label>
       <input type="number" id="alcBefore" placeholder="0.00" step="0.01">
       <div class="check-list-container"><div id="itemsBeforeContainer"></div></div>
-      <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ ＞</button></div>
+      <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ（運行後入力へ） ＞</button></div>
     </div>
 
     <div id="page2" class="page">
@@ -85,15 +85,15 @@
       <textarea id="memo" placeholder="特記事項（異常や連絡事項）" rows="3" style="margin-top:15px;"></textarea>
       <div class="btn-group">
         <button type="button" onclick="prevPage()">戻る</button>
-        <button type="submit" class="btn-submit">一括送信</button>
+        <button type="submit" class="btn-submit">全データ送信</button>
       </div>
-      <button type="button" class="btn-clear" onclick="clearDraft()">下書きを消去</button>
+      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット</button>
     </div>
   </form>
 </div>
 
 <script>
-const STORAGE_KEY = 'report_draft_v12';
+const STORAGE_KEY = 'report_draft_v2025';
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
   { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付）", on: "正常", off: "異常" },
@@ -164,12 +164,14 @@ function nextPage() {
   saveDraft();
   document.getElementById('page1').classList.remove('active');
   document.getElementById('page2').classList.add('active');
+  document.querySelector('.id-step2')?.classList.add('active');
   window.scrollTo(0,0);
 }
 
 function prevPage() {
   document.getElementById('page2').classList.remove('active');
   document.getElementById('page1').classList.add('active');
+  document.querySelector('.id-step2')?.classList.remove('active');
 }
 
 function calculateTotal() {
@@ -184,6 +186,7 @@ function saveDraft() {
     dateAfter: document.getElementById('dateAfter').value,
     startTime: document.getElementById('startTime').value,
     endTime: document.getElementById('endTime').value,
+    methodBefore: document.getElementById('methodBefore').value,
     distStart: document.getElementById('distStart').value,
     distEnd: document.getElementById('distEnd').value,
     alcBefore: document.getElementById('alcBefore').value,
@@ -246,8 +249,8 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
 
   try {
     await fetch(url, { method: "POST", mode: "no-cors", body: f });
-    alert("送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
-  } catch (err) { alert("エラー"); btn.disabled = false; }
+    alert("一括送信が完了しました！"); localStorage.removeItem(STORAGE_KEY); location.reload();
+  } catch (err) { alert("エラーが発生しました。"); btn.disabled = false; }
 });
 window.onload = init;
 </script>
