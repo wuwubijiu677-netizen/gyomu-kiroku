@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム</title>
+  <title>業務記録（屋比久 悟）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/t-okada/asset/main/hibiscus_bw.png">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/L6WvF6L/hibiscus-bw.png">
   <meta name="apple-mobile-web-app-title" content="業務記録">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -13,53 +13,43 @@
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
     body { font-family: system-ui, -apple-system; background: var(--bg); margin: 0; color: var(--text); padding-bottom: 40px; }
     .container { max-width: 500px; margin: 0 auto; background: #fff; min-height: 100vh; display: flex; flex-direction: column; }
-    .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .header h2 { margin: 0; font-size: 1.2rem; }
-
+    .header { background: var(--primary); color: #fff; padding: 20px; text-align: center; }
     .step-bar { display: flex; background: #e0f7fa; padding: 10px 0; border-bottom: 1px solid #b2ebf2; }
-    .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; position: relative; }
+    .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; }
     .step.active { color: var(--primary); }
-
     form { padding: 20px; flex: 1; }
-    .page { display: none; animation: fadeIn 0.3s ease; }
-    .page.active { display: block; }
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
     .field-group { display: flex; gap: 10px; }
     .field-group > div { flex: 1; }
     input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-    .readonly-field { background: #f0f0f0; color: #666; border-color: #eee; }
-
+    .readonly-field { background: #f0f0f0; color: #666; }
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     .label-text { font-size: 12px; line-height: 1.4; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
-
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
-
     .btn-group { margin-top: 35px; display: flex; gap: 12px; }
-    button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .btn-next { background: var(--primary); color: #fff; box-shadow: 0 4px 0 #0097a7; }
-    .btn-prev { background: #eee; color: #666; }
-    .btn-submit { background: #4caf50; color: #fff; box-shadow: 0 4px 0 #388e3c; }
-    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 10px; margin-top: 30px; border-radius: 8px; border:none; width:100%; }
-    button:active { transform: translateY(2px); box-shadow: none; }
+    button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn-next { background: var(--primary); color: #fff; }
+    .btn-submit { background: #4caf50; color: #fff; }
+    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 10px; margin-top: 20px; border-radius: 8px; border:none; width:100%; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header"><h2>業務記録（屋比久 悟）</h2></div>
-  
   <div class="step-bar">
     <div class="step id-step1 active">1. 運行前入力</div>
-    <div class="step id-step2">2. 運行後入力・一括送信</div>
+    <div class="step id-step2">2. 運行後・一括送信</div>
   </div>
 
   <form id="recordForm">
@@ -68,26 +58,16 @@
         <div><label>運行前日付</label><input type="date" id="dateBefore" required></div>
         <div><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
-      
       <div class="field-group">
         <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
         <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
-
       <label>走行距離計（運行前） [km]</label>
       <input type="number" id="distStart" placeholder="開始距離を入力" step="0.1" required>
-
-      <label>アルコールチェック（運行前） [mg/L]</label>
+      <label>アルコールチェック（前） [mg/L]</label>
       <input type="number" id="alcBefore" placeholder="0.00" step="0.01">
-
-      <div class="check-list-container">
-        <label style="color:var(--primary);">▼ 運行前 点検項目</label>
-        <div id="itemsBeforeContainer"></div>
-      </div>
-
-      <div class="btn-group">
-        <button type="button" class="btn-next" onclick="nextPage()">次へ（運行後入力へ） ＞</button>
-      </div>
+      <div class="check-list-container"><div id="itemsBeforeContainer"></div></div>
+      <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ ＞</button></div>
     </div>
 
     <div id="page2" class="page">
@@ -95,45 +75,30 @@
         <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
         <div><label>完了時間</label><input type="time" id="endTime" required></div>
       </div>
-
-      <div class="field-group">
-        <div><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
-        <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
-      </div>
-
       <div class="field-group">
         <div><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
-        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算"></div>
+        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
       </div>
-
-      <label>アルコールチェック（運行後） [mg/L]</label>
+      <label>アルコールチェック（後） [mg/L]</label>
       <input type="number" id="alcAfter" placeholder="0.00" step="0.01">
-
-      <div class="check-list-container">
-        <label style="color:var(--primary);">▼ 運行後 点検項目</label>
-        <div id="itemsAfterContainer"></div>
-      </div>
-
-      <label>特記事項</label>
-      <textarea id="memo" placeholder="異常や連絡事項があれば記入" rows="3"></textarea>
-
+      <div class="check-list-container"><div id="itemsAfterContainer"></div></div>
+      <textarea id="memo" placeholder="特記事項（異常や連絡事項）" rows="3" style="margin-top:15px;"></textarea>
       <div class="btn-group">
-        <button type="button" onclick="prevPage()" class="btn-prev">戻る</button>
-        <button type="submit" class="btn-submit">全データを一括送信</button>
+        <button type="button" onclick="prevPage()">戻る</button>
+        <button type="submit" class="btn-submit">一括送信</button>
       </div>
-      
-      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット（最初からやり直し）</button>
+      <button type="button" class="btn-clear" onclick="clearDraft()">下書きを消去</button>
     </div>
   </form>
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_final_v10';
+const STORAGE_KEY = 'report_draft_v12';
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
-  { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付状態）", on: "正常", off: "異常" },
-  { id: "light", label: "灯火類（前照灯・指示器・非常点滅・制動・後退・尾灯）", on: "正常", off: "異常" },
-  { id: "oil", label: "油脂類（ブレーキ液・パワステ・エンジン・冷却水）", on: "正常", off: "異常" },
+  { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付）", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類（前照灯・指示・非常点滅・制動・後退・尾灯）", on: "正常", off: "異常" },
+  { id: "oil", label: "油脂類（ブレーキ・パワステ・オイル・冷却水）", on: "正常", off: "異常" },
   { id: "vehicle", label: "車両異常（異音・バッテリー・ベルト類）", on: "正常", off: "異常" },
   { id: "condition", label: "体調確認（睡眠不足・疾病・疲労等）", on: "良好", off: "不調" },
   { id: "drunk", label: "酒気帯び有無", on: "無", off: "有" },
@@ -143,14 +108,13 @@ const checkItems = [
 function init() {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
-  const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
 
   document.getElementById('dateBefore').value = dateStr;
   document.getElementById('startTime').value = timeStr;
   document.getElementById('dateAfter').value = dateStr;
   document.getElementById('endTime').value = timeStr;
 
-  // 深夜（0時〜5時）は運行前日付を昨日にセット
   if (now.getHours() < 5) {
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
@@ -161,32 +125,13 @@ function init() {
   renderItems("itemsAfterContainer", "After");
   loadDraft();
 
-  const inputs = ['dateBefore', 'dateAfter', 'distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'methodBefore', 'methodAfter', 'memo'];
+  const inputs = ['dateBefore', 'dateAfter', 'distStart', 'distEnd', 'alcBefore', 'alcAfter', 'startTime', 'endTime', 'memo'];
   inputs.forEach(id => {
     document.getElementById(id).addEventListener('input', () => {
       if (id.includes('dist')) calculateTotal();
       saveDraft();
     });
   });
-}
-
-function nextPage() {
-  if (!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
-  const now = new Date();
-  document.getElementById('dateAfter').value = now.toISOString().split('T')[0];
-  document.getElementById('endTime').value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-  saveDraft();
-  document.getElementById('page1').classList.remove('active');
-  document.getElementById('page2').classList.add('active');
-  document.querySelector('.id-step2').classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function prevPage() {
-  document.getElementById('page2').classList.remove('active');
-  document.getElementById('page1').classList.add('active');
-  document.querySelector('.id-step2').classList.remove('active');
-  window.scrollTo(0, 0);
 }
 
 function renderItems(containerId, suffix) {
@@ -211,6 +156,22 @@ function renderItems(containerId, suffix) {
   });
 }
 
+function nextPage() {
+  if (!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
+  const now = new Date();
+  document.getElementById('dateAfter').value = now.toISOString().split('T')[0];
+  document.getElementById('endTime').value = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  saveDraft();
+  document.getElementById('page1').classList.remove('active');
+  document.getElementById('page2').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function prevPage() {
+  document.getElementById('page2').classList.remove('active');
+  document.getElementById('page1').classList.add('active');
+}
+
 function calculateTotal() {
   const s = parseFloat(document.getElementById('distStart').value) || 0;
   const e = parseFloat(document.getElementById('distEnd').value) || 0;
@@ -223,8 +184,6 @@ function saveDraft() {
     dateAfter: document.getElementById('dateAfter').value,
     startTime: document.getElementById('startTime').value,
     endTime: document.getElementById('endTime').value,
-    methodBefore: document.getElementById('methodBefore').value,
-    methodAfter: document.getElementById('methodAfter').value,
     distStart: document.getElementById('distStart').value,
     distEnd: document.getElementById('distEnd').value,
     alcBefore: document.getElementById('alcBefore').value,
@@ -242,34 +201,29 @@ function saveDraft() {
 function loadDraft() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return;
-  const draft = JSON.parse(saved);
-  Object.keys(draft).forEach(key => {
-    if (key !== 'checks' && document.getElementById(key)) document.getElementById(key).value = draft[key];
-  });
-  checkItems.forEach(item => {
-    ["Before", "After"].forEach(suffix => {
-      const id = item.id + suffix;
+  const d = JSON.parse(saved);
+  Object.keys(d).forEach(k => { if(k!=='checks'&&document.getElementById(k)) document.getElementById(k).value = d[k]; });
+  checkItems.forEach(i => {
+    ["Before", "After"].forEach(s => {
+      const id = i.id + s;
       const cb = document.getElementById(id);
-      if (draft.checks && draft.checks[id] !== undefined) {
-        cb.checked = draft.checks[id];
-        const s = document.getElementById(id + "Status");
-        s.textContent = cb.checked ? item.on : item.off;
-        s.style.color = cb.checked ? "#00bcd4" : "#f44336";
+      if (d.checks && d.checks[id] !== undefined) {
+        cb.checked = d.checks[id];
+        const st = document.getElementById(id + "Status");
+        st.textContent = cb.checked ? i.on : i.off;
+        st.style.color = cb.checked ? "#00bcd4" : "#f44336";
       }
     });
   });
   calculateTotal();
 }
 
-function clearDraft() {
-  if (confirm("下書きをすべて消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-}
+function clearDraft() { if (confirm("下書きを消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
 document.getElementById('recordForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const submitBtn = e.target.querySelector('.btn-submit');
-  submitBtn.disabled = true;
-  submitBtn.textContent = "送信中...";
+  const btn = e.target.querySelector('.btn-submit');
+  btn.disabled = true; btn.textContent = "送信中...";
 
   const data = {
     dateBefore: document.getElementById('dateBefore').value,
@@ -279,33 +233,22 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
     alcBefore: document.getElementById('alcBefore').value,
     dateAfter: document.getElementById('dateAfter').value,
     endTime: document.getElementById('endTime').value,
-    methodAfter: document.getElementById('methodAfter').value,
+    methodAfter: "対面",
     distEnd: document.getElementById('distEnd').value,
     distTotal: document.getElementById('distTotal').value,
     alcAfter: document.getElementById('alcAfter').value,
     memo: document.getElementById('memo').value,
-    driver: "屋比久悟",
-    carNo: "足立481り9586"
+    driver: "屋比久悟", carNo: "足立481り9586"
   };
 
-  // 【重要】ここにGASのウェブアプリURLを貼り付けてください
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
-
-  const formData = new URLSearchParams();
-  formData.append('contents', JSON.stringify(data));
+  const url = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
+  const f = new URLSearchParams(); f.append('contents', JSON.stringify(data));
 
   try {
-    await fetch(webAppUrl, { method: "POST", mode: "no-cors", body: formData });
-    alert("一括送信が完了しました！\nお疲れ様でした。");
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  } catch (err) {
-    alert("通信エラー。URLが正しいか、GASの設定（全員に公開）を確認してください。");
-    submitBtn.disabled = false;
-    submitBtn.textContent = "全データを一括送信";
-  }
+    await fetch(url, { method: "POST", mode: "no-cors", body: f });
+    alert("送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
+  } catch (err) { alert("エラー"); btn.disabled = false; }
 });
-
 window.onload = init;
 </script>
 </body>
