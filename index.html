@@ -5,10 +5,6 @@
   <title>業務記録（屋比久 悟）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/t-okada/asset/main/hibiscus_bw.png">
-  <meta name="apple-mobile-web-app-title" content="業務記録">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
     body { font-family: system-ui, -apple-system; background: var(--bg); margin: 0; color: var(--text); padding-bottom: 40px; }
@@ -18,17 +14,32 @@
     .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; }
     .step.active { color: var(--primary); }
     form { padding: 20px; flex: 1; }
-    .page { display: none; animation: fadeIn 0.3s ease; }
-    .page.active { display: block; }
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
-    .field-group { display: flex; gap: 10px; }
-    .field-group > div { flex: 1; }
-    input, select, textarea { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+
+    /* ★横並びの幅調整：日付を広め(2.5)、時間を狭め(1.5)に設定 */
+    .field-group { display: flex; gap: 8px; align-items: flex-end; }
+    .group-date { flex: 2.5; }
+    .group-time { flex: 1.5; }
+
+    input, select, textarea { 
+      width: 100%; 
+      padding: 10px; 
+      margin-top: 6px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      box-sizing: border-box; 
+      font-size: 15px; /* iOSでズームされない適度なサイズ */
+      -webkit-appearance: none; /* iOSのデフォルトスタイルをリセット */
+    }
     .readonly-field { background: #f0f0f0; color: #666; }
+
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .label-text { font-size: 13px; flex: 1; padding-right: 10px; line-height: 1.4; }
+    .label-text { font-size: 12px; line-height: 1.4; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
@@ -36,6 +47,7 @@
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
+
     .btn-group { margin-top: 35px; display: flex; gap: 12px; }
     button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
     .btn-next { background: var(--primary); color: #fff; }
@@ -55,8 +67,8 @@
   <form id="recordForm">
     <div id="page1" class="page active">
       <div class="field-group">
-        <div><label>運行前日付</label><input type="date" id="dateBefore" required></div>
-        <div><label>開始時間</label><input type="time" id="startTime" required></div>
+        <div class="group-date"><label>運行前日付</label><input type="date" id="dateBefore" required></div>
+        <div class="group-time"><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
       <div class="field-group">
         <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
@@ -64,21 +76,21 @@
       </div>
       <label>走行距離計（前） [km]</label><input type="number" id="distStart" placeholder="開始距離" step="0.1" required>
       <label>アルコール（前） [mg/L]</label><input type="number" id="alcBefore" step="0.01" value="0.00">
-      <div class="check-list-container"><label style="color:var(--primary);">▼ 運行前 点検項目</label><div id="itemsBeforeContainer"></div></div>
+      <div class="check-list-container"><div id="itemsBeforeContainer"></div></div>
       <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ ＞</button></div>
     </div>
 
     <div id="page2" class="page">
       <div class="field-group">
-        <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
-        <div><label>完了時間</label><input type="time" id="endTime" required></div>
+        <div class="group-date"><label>運行後日付</label><input type="date" id="dateAfter" required></div>
+        <div class="group-time"><label>完了時間</label><input type="time" id="endTime" required></div>
       </div>
       <div class="field-group">
         <div><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
-        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly></div>
+        <div><label>総走行距離</label><input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算"></div>
       </div>
       <label>アルコール（後） [mg/L]</label><input type="number" id="alcAfter" step="0.01" value="0.00">
-      <div class="check-list-container"><label style="color:var(--primary);">▼ 運行後 点検項目</label><div id="itemsAfterContainer"></div></div>
+      <div class="check-list-container"><div id="itemsAfterContainer"></div></div>
       <textarea id="memo" placeholder="特記事項（異常や連絡事項）" rows="3" style="margin-top:15px;"></textarea>
       <div class="btn-group">
         <button type="button" onclick="prevPage()">戻る</button>
@@ -91,7 +103,8 @@
 
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
-const STORAGE_KEY = 'report_draft_full_v1';
+const STORAGE_KEY = 'report_draft_final_v3';
+
 const checkItems = [
   { id: "alc", label: "アルコール検知器使用", on: "使用", off: "未使用" },
   { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付）", on: "正常", off: "異常" },
@@ -107,29 +120,37 @@ function init() {
   const now = new Date();
   const dStr = now.toISOString().split('T')[0];
   const tStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+
   document.getElementById('dateBefore').value = dStr;
   document.getElementById('dateAfter').value = dStr;
   document.getElementById('startTime').value = tStr;
   document.getElementById('endTime').value = tStr;
-  
+
   if (now.getHours() < 5) {
     const yest = new Date(now); yest.setDate(now.getDate()-1);
     document.getElementById('dateBefore').value = yest.toISOString().split('T')[0];
   }
 
-  render("itemsBeforeContainer", "B");
-  render("itemsAfterContainer", "A");
+  renderItems("itemsBeforeContainer", "B");
+  renderItems("itemsAfterContainer", "A");
   loadDraft();
 
   ['distStart','distEnd'].forEach(id => document.getElementById(id).addEventListener('input', calcTotal));
   document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', saveDraft));
 }
 
-function render(cid, suf) {
+function renderItems(cid, suf) {
   const container = document.getElementById(cid);
   checkItems.forEach(i => {
     const id = i.id + suf;
-    container.insertAdjacentHTML('beforeend', `<div class="check-item"><span class="label-text">${i.label}</span><div><span class="status-text" id="${id}S">${i.off}</span><label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label></div></div>`);
+    container.insertAdjacentHTML('beforeend', `
+      <div class="check-item">
+        <span class="label-text">${i.label}</span>
+        <div>
+          <span class="status-text" id="${id}S">${i.off}</span>
+          <label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label>
+        </div>
+      </div>`);
     document.getElementById(id).addEventListener('change', (e) => {
       const s = document.getElementById(id + "S");
       s.textContent = e.target.checked ? i.on : i.off;
@@ -140,7 +161,7 @@ function render(cid, suf) {
 }
 
 function nextPage() {
-  if (!document.getElementById('distStart').value) { alert("距離を入力してください"); return; }
+  if (!document.getElementById('distStart').value) { alert("走行前距離を入力してください"); return; }
   document.getElementById('page1').classList.remove('active');
   document.getElementById('page2').classList.add('active');
   document.getElementById('step2-tab').classList.add('active');
@@ -167,17 +188,24 @@ function saveDraft() {
     dE:document.getElementById('distEnd').value, aB:document.getElementById('alcBefore').value,
     aA:document.getElementById('alcAfter').value, memo:document.getElementById('memo').value, c:{}
   };
-  checkItems.forEach(i => { d.c[i.id+"B"] = document.getElementById(i.id+"B").checked; d.c[i.id+"A"] = document.getElementById(i.id+"A").checked; });
+  checkItems.forEach(i => {
+    d.c[i.id+"B"] = document.getElementById(i.id+"B").checked;
+    d.c[i.id+"A"] = document.getElementById(i.id+"A").checked;
+  });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
 }
 
 function loadDraft() {
   const s = localStorage.getItem(STORAGE_KEY); if (!s) return;
   const d = JSON.parse(s);
-  Object.keys(d).forEach(k => { if(k!=='c'&&document.getElementById(k)) document.getElementById(k).value = d[k]; });
-  document.getElementById('dateBefore').value = d.bD; // 読み込み補完
+  if(d.bD) document.getElementById('dateBefore').value = d.bD;
+  if(d.sT) document.getElementById('startTime').value = d.sT;
+  if(d.dS) document.getElementById('distStart').value = d.dS;
+  if(d.aB) document.getElementById('alcBefore').value = d.aB;
+  if(d.memo) document.getElementById('memo').value = d.memo;
   checkItems.forEach(i => {
-    [i.id+"B", i.id+"A"].forEach(id => {
+    ["B", "A"].forEach(suf => {
+      const id = i.id + suf;
       if(d.c[id]) {
         document.getElementById(id).checked = true;
         const st = document.getElementById(id+"S");
@@ -188,7 +216,7 @@ function loadDraft() {
   calcTotal();
 }
 
-function clearDraft() { if(confirm("下書きを消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+function clearDraft() { if(confirm("下書きをすべて消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
 document.getElementById('recordForm').onsubmit = async (e) => {
   e.preventDefault();
@@ -203,7 +231,7 @@ document.getElementById('recordForm').onsubmit = async (e) => {
     alcBefore: document.getElementById('alcBefore').value,
     dateAfter: document.getElementById('dateAfter').value,
     endTime: document.getElementById('endTime').value,
-    methodAfter: document.getElementById('methodAfter').value,
+    methodAfter: "対面",
     distEnd: document.getElementById('distEnd').value,
     distTotal: document.getElementById('distTotal').value,
     alcAfter: document.getElementById('alcAfter').value,
@@ -217,8 +245,9 @@ document.getElementById('recordForm').onsubmit = async (e) => {
     alert("一括送信が完了しました！");
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
-  } catch (err) { alert("エラー"); btn.disabled = false; }
+  } catch (err) { alert("エラーが発生しました。"); btn.disabled = false; btn.textContent = "一括送信"; }
 };
+
 window.onload = init;
 </script>
 </body>
