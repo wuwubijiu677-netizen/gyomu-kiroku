@@ -14,33 +14,38 @@
     .step { flex: 1; text-align: center; font-size: 12px; color: #888; font-weight: bold; }
     .step.active { color: var(--primary); }
     form { padding: 20px; flex: 1; }
-    .page { display: none; }
-    .page.active { display: block; animation: fadeIn 0.3s ease; }
+    .page { display: none; animation: fadeIn 0.3s ease; }
+    .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    label { display: block; margin-top: 18px; font-weight: bold; font-size: 14px; }
+    label { display: block; margin-top: 18px; font-weight: bold; font-size: 13px; color: #555; }
 
-    /* ★横並びの幅調整：日付を広め(2.5)、時間を狭め(1.5)に設定 */
-    .field-group { display: flex; gap: 8px; align-items: flex-end; }
-    .group-date { flex: 2.5; }
-    .group-time { flex: 1.5; }
+    /* ★すべての横並びを均等分割 (50% : 50%) に設定 */
+    .field-group { display: flex; gap: 10px; align-items: flex-end; }
+    .field-group > div { flex: 1; width: 50%; }
 
     input, select, textarea { 
       width: 100%; 
-      padding: 10px; 
+      padding: 10px 6px; /* 左右の余白を少し削って短く収める */
       margin-top: 6px; 
       border: 1px solid #ddd; 
       border-radius: 8px; 
       box-sizing: border-box; 
-      font-size: 15px; /* iOSでズームされない適度なサイズ */
-      -webkit-appearance: none; /* iOSのデフォルトスタイルをリセット */
+      font-size: 15px; /* iOSのズーム防止（16px以下だとズームする場合があるが、15pxで調整） */
     }
-    .readonly-field { background: #f0f0f0; color: #666; }
+    /* iOSの日付・時間入力欄の余白をさらに最適化 */
+    input[type="date"], input[type="time"] {
+      font-size: 14px; 
+      padding: 10px 4px;
+    }
+
+    .readonly-field { background: #f0f0f0; color: #666; border-color: #eee; }
 
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .label-text { font-size: 12px; line-height: 1.4; flex: 1; padding-right: 10px; }
+    .label-text { font-size: 13px; line-height: 1.4; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
+
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
@@ -67,8 +72,8 @@
   <form id="recordForm">
     <div id="page1" class="page active">
       <div class="field-group">
-        <div class="group-date"><label>運行前日付</label><input type="date" id="dateBefore" required></div>
-        <div class="group-time"><label>開始時間</label><input type="time" id="startTime" required></div>
+        <div><label>運行前日付</label><input type="date" id="dateBefore" required></div>
+        <div><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
       <div class="field-group">
         <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
@@ -82,8 +87,12 @@
 
     <div id="page2" class="page">
       <div class="field-group">
-        <div class="group-date"><label>運行後日付</label><input type="date" id="dateAfter" required></div>
-        <div class="group-time"><label>完了時間</label><input type="time" id="endTime" required></div>
+        <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
+        <div><label>完了時間</label><input type="time" id="endTime" required></div>
+      </div>
+      <div class="field-group">
+        <div><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
+        <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
       <div class="field-group">
         <div><label>走行距離（後）</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
@@ -103,12 +112,11 @@
 
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx-EtSegrxJq64PcVy3dGqmdtJZ9hAnnswmBTqbTOQolYp7MqbvvUqAEbUyhQ3y7Ctxsg/exec";
-const STORAGE_KEY = 'report_draft_final_v3';
-
+const STORAGE_KEY = 'report_draft_unified_v1';
 const checkItems = [
   { id: "alc", label: "アルコール検知器使用", on: "使用", off: "未使用" },
   { id: "tire", label: "タイヤ（空気圧・亀裂・損傷・摩耗・取付）", on: "正常", off: "異常" },
-  { id: "light", label: "灯火類（前照灯・指示・非常・制動・後退・尾灯）", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類（前照灯・指示・点滅・制動・後退・尾灯）", on: "正常", off: "異常" },
   { id: "oil", label: "油脂類（ブレーキ・パワステ・オイル・冷却水）", on: "正常", off: "異常" },
   { id: "veh", label: "車両異常（異音・バッテリー・ベルト類）", on: "正常", off: "異常" },
   { id: "cond", label: "体調確認（睡眠不足・疾病・疲労等）", on: "良好", off: "不調" },
@@ -120,21 +128,17 @@ function init() {
   const now = new Date();
   const dStr = now.toISOString().split('T')[0];
   const tStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-
   document.getElementById('dateBefore').value = dStr;
   document.getElementById('dateAfter').value = dStr;
   document.getElementById('startTime').value = tStr;
   document.getElementById('endTime').value = tStr;
-
   if (now.getHours() < 5) {
     const yest = new Date(now); yest.setDate(now.getDate()-1);
     document.getElementById('dateBefore').value = yest.toISOString().split('T')[0];
   }
-
   renderItems("itemsBeforeContainer", "B");
   renderItems("itemsAfterContainer", "A");
   loadDraft();
-
   ['distStart','distEnd'].forEach(id => document.getElementById(id).addEventListener('input', calcTotal));
   document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', saveDraft));
 }
@@ -143,14 +147,7 @@ function renderItems(cid, suf) {
   const container = document.getElementById(cid);
   checkItems.forEach(i => {
     const id = i.id + suf;
-    container.insertAdjacentHTML('beforeend', `
-      <div class="check-item">
-        <span class="label-text">${i.label}</span>
-        <div>
-          <span class="status-text" id="${id}S">${i.off}</span>
-          <label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label>
-        </div>
-      </div>`);
+    container.insertAdjacentHTML('beforeend', `<div class="check-item"><span class="label-text">${i.label}</span><div><span class="status-text" id="${id}S">${i.off}</span><label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label></div></div>`);
     document.getElementById(id).addEventListener('change', (e) => {
       const s = document.getElementById(id + "S");
       s.textContent = e.target.checked ? i.on : i.off;
@@ -167,19 +164,16 @@ function nextPage() {
   document.getElementById('step2-tab').classList.add('active');
   window.scrollTo(0,0);
 }
-
 function prevPage() {
   document.getElementById('page2').classList.remove('active');
   document.getElementById('page1').classList.add('active');
   document.getElementById('step2-tab').classList.remove('active');
 }
-
 function calcTotal() {
   const s = parseFloat(document.getElementById('distStart').value) || 0;
   const e = parseFloat(document.getElementById('distEnd').value) || 0;
   document.getElementById('distTotal').value = (e - s > 0) ? (e - s).toFixed(1) : "0.0";
 }
-
 function saveDraft() {
   const d = {
     bD:document.getElementById('dateBefore').value, aD:document.getElementById('dateAfter').value,
@@ -188,18 +182,13 @@ function saveDraft() {
     dE:document.getElementById('distEnd').value, aB:document.getElementById('alcBefore').value,
     aA:document.getElementById('alcAfter').value, memo:document.getElementById('memo').value, c:{}
   };
-  checkItems.forEach(i => {
-    d.c[i.id+"B"] = document.getElementById(i.id+"B").checked;
-    d.c[i.id+"A"] = document.getElementById(i.id+"A").checked;
-  });
+  checkItems.forEach(i => { d.c[i.id+"B"] = document.getElementById(i.id+"B").checked; d.c[i.id+"A"] = document.getElementById(i.id+"A").checked; });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
 }
-
 function loadDraft() {
   const s = localStorage.getItem(STORAGE_KEY); if (!s) return;
   const d = JSON.parse(s);
   if(d.bD) document.getElementById('dateBefore').value = d.bD;
-  if(d.sT) document.getElementById('startTime').value = d.sT;
   if(d.dS) document.getElementById('distStart').value = d.dS;
   if(d.aB) document.getElementById('alcBefore').value = d.aB;
   if(d.memo) document.getElementById('memo').value = d.memo;
@@ -215,39 +204,27 @@ function loadDraft() {
   });
   calcTotal();
 }
-
 function clearDraft() { if(confirm("下書きをすべて消去しますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
 document.getElementById('recordForm').onsubmit = async (e) => {
   e.preventDefault();
   const btn = e.target.querySelector('.btn-submit');
   btn.disabled = true; btn.textContent = "送信中...";
-
   const data = {
-    dateBefore: document.getElementById('dateBefore').value,
-    startTime: document.getElementById('startTime').value,
-    methodBefore: document.getElementById('methodBefore').value,
-    distStart: document.getElementById('distStart').value,
-    alcBefore: document.getElementById('alcBefore').value,
-    dateAfter: document.getElementById('dateAfter').value,
-    endTime: document.getElementById('endTime').value,
-    methodAfter: "対面",
-    distEnd: document.getElementById('distEnd').value,
-    distTotal: document.getElementById('distTotal').value,
-    alcAfter: document.getElementById('alcAfter').value,
-    memo: document.getElementById('memo').value,
+    dateBefore: document.getElementById('dateBefore').value, startTime: document.getElementById('startTime').value,
+    methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value,
+    alcBefore: document.getElementById('alcBefore').value, dateAfter: document.getElementById('dateAfter').value,
+    endTime: document.getElementById('endTime').value, methodAfter: document.getElementById('methodAfter').value,
+    distEnd: document.getElementById('distEnd').value, distTotal: document.getElementById('distTotal').value,
+    alcAfter: document.getElementById('alcAfter').value, memo: document.getElementById('memo').value,
     driver: "屋比久悟", carNo: "足立481り9586"
   };
-
   try {
     const f = new URLSearchParams(); f.append('contents', JSON.stringify(data));
     await fetch(GAS_URL, { method: "POST", mode: "no-cors", body: f });
-    alert("一括送信が完了しました！");
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  } catch (err) { alert("エラーが発生しました。"); btn.disabled = false; btn.textContent = "一括送信"; }
+    alert("一括送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
+  } catch (err) { alert("送信エラー"); btn.disabled = false; }
 };
-
 window.onload = init;
 </script>
 </body>
