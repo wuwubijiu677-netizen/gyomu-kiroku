@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>業務記録システム（日またぎ自動判定版）</title>
+  <title>業務記録システム（詳細点検版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     :root { --primary: #00bcd4; --bg: #f5f7f8; --text: #333; }
@@ -23,8 +23,9 @@
     .readonly-field { background: #f0f0f0; color: #666; }
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .label-text { font-size: 13px; flex: 1; padding-right: 10px; line-height: 1.4; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
-    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
@@ -111,30 +112,29 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'daily_report_final_v1';
+const STORAGE_KEY = 'daily_report_final_v5';
+// 点検項目の詳細化
 const checkItems = [
   { id: "alcohol", label: "アルコール検知器使用", on: "使用", off: "未使用" },
-  { id: "vehicle", label: "車両異常確認", on: "正常", off: "異常" },
-  { id: "condition", label: "体調確認", on: "良好", off: "不調" },
+  { id: "tire", label: "タイヤ点検（空気圧・亀裂・損傷・摩耗・取付状態）", on: "正常", off: "異常" },
+  { id: "light", label: "灯火類点検（前照灯・方向指示・非常点滅・制動灯・後退灯・尾灯）", on: "正常", off: "異常" },
+  { id: "oil", label: "油脂類点検（ブレーキ液・パワステ・エンジンオイル・冷却水）", on: "正常", off: "異常" },
+  { id: "vehicle", label: "車両異常確認（異音・バッテリー・ベルト類）", on: "正常", off: "異常" },
+  { id: "condition", label: "体調確認（睡眠不足・疾病・疲労等）", on: "良好", off: "不調" },
   { id: "drunk", label: "酒気帯び有無", on: "無", off: "有" },
-  { id: "tire", label: "タイヤ点検", on: "正常", off: "異常" },
-  { id: "light", label: "灯火類点検", on: "正常", off: "異常" },
-  { id: "oil", label: "油脂類点検", on: "正常", off: "異常" }
+  { id: "license", label: "免許証携帯確認", on: "携帯", off: "不携帯" }
 ];
 
-// 初期化処理
 function init() {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
   const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-  // デフォルト値のセット
   document.getElementById('dateBefore').value = dateStr;
   document.getElementById('startTime').value = timeStr;
   document.getElementById('dateAfter').value = dateStr;
   document.getElementById('endTime').value = timeStr;
 
-  // 深夜（0時〜5時）判定
   if (now.getHours() < 5) {
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
@@ -157,15 +157,9 @@ function init() {
 
 function nextPage() {
   if (!document.getElementById('distStart').value) { alert("運行前の距離を入力してください"); return; }
-  
   const now = new Date();
-  const dateStr = now.toISOString().split('T')[0];
-  const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-
-  // STEP2に移動する瞬間に運行後日付を「現在」に自動更新
-  document.getElementById('dateAfter').value = dateStr;
-  document.getElementById('endTime').value = timeStr;
-
+  document.getElementById('dateAfter').value = now.toISOString().split('T')[0];
+  document.getElementById('endTime').value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
   saveDraft();
   document.getElementById('page1').classList.remove('active');
   document.getElementById('page2').classList.add('active');
@@ -279,7 +273,7 @@ document.getElementById('recordForm').addEventListener('submit', async e => {
     carNo: "足立481り9586"
   };
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbyvi6sABiksdJSazbh20vCce4dpDJsNVTsJ89Dj_Sb6_LVOYa9wocUubkyC9F4mgmAGqg/exec";
+  const webAppUrl = "あなたのGASデプロイURLをここに貼り付け";
   const formData = new URLSearchParams();
   formData.append('contents', JSON.stringify(data));
 
