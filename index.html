@@ -83,8 +83,8 @@
   </form>
 </div>
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwzXKzoA4jiwyVeJZjiILD5nbD84ipD7aM93cJSLeWjRNF5rIzyFGpLFawjNkWPgO-X/exec";
-const STORAGE_KEY = 'report_draft_unified_v3';
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw0MqR2nGgwsEWGvRgdqJPTILtg7YkB5HM0M_ubl88hBM8OXwPiIX2zifqGChUe2umDEA/exec";
+const STORAGE_KEY = 'report_draft_unified_v4';
 
 const checkItems = [
   { id: "alc", label: "アルコール検知器使用", short: "ｱﾙｺｰﾙ", on: "⚪︎", off: "×未使用" },
@@ -99,8 +99,11 @@ const checkItems = [
 
 function init() {
   const now = new Date();
-  const dStr = now.toISOString().split('T')[0];
-  const tStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const y = now.getFullYear();
+  const m = (now.getMonth() + 1).toString().padStart(2, '0');
+  const d = now.getDate().toString().padStart(2, '0');
+  const dStr = `${y}-${m}-${d}`;
+  const tStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
   document.getElementById('dateBefore').value = dStr;
   document.getElementById('dateAfter').value = dStr;
   document.getElementById('startTime').value = tStr;
