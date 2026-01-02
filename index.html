@@ -17,30 +17,21 @@
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     label { display: block; margin-top: 18px; font-weight: bold; font-size: 13px; color: #555; }
-
-    /* 日付と時間の間隔を 20px に設定 */
     .field-group { display: flex; gap: 20px; align-items: flex-end; }
     .field-group > div { flex: 1; width: 50%; }
-
-    input, select, textarea { 
-      width: 100%; padding: 10px 6px; margin-top: 6px; 
-      border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px;
-    }
+    input, select, textarea { width: 100%; padding: 10px 6px; margin-top: 6px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
     input[type="date"], input[type="time"] { font-size: 14px; padding: 10px 4px; }
     .readonly-field { background: #f0f0f0; color: #666; border-color: #eee; }
-
     .check-list-container { margin-top: 15px; border-top: 2px solid var(--primary); padding-top: 10px; }
     .check-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     .label-text { font-size: 13px; line-height: 1.4; flex: 1; padding-right: 10px; }
     .status-text { font-size: 11px; font-weight: bold; color: #f44336; margin-bottom: 4px; display: block; text-align: right; }
-
     .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
     .switch input { display: none; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 34px; transition: .3s; }
     .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; }
     input:checked + .slider { background: var(--primary); }
     input:checked + .slider:before { transform: translateX(24px); }
-
     .btn-group { margin-top: 35px; display: flex; gap: 12px; }
     button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
     .btn-next { background: var(--primary); color: #fff; }
@@ -68,12 +59,13 @@
       <label>走行距離計（前） [km]</label><input type="number" id="distStart" placeholder="開始距離" step="0.1" required>
       <label>アルコール検査値（前） [mg/L]</label><input type="number" id="alcBefore" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行前 点検項目</label><div id="itemsBeforeContainer"></div></div>
+      <textarea id="memoBefore" placeholder="運行前の特記事項" rows="2" style="margin-top:15px;"></textarea>
       <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ ＞</button></div>
     </div>
     <div id="page2" class="page">
-      <div class="row-datetime" style="display:flex; gap:20px; align-items:flex-end;">
-        <div style="flex:1;"><label>運行後日付</label><input type="date" id="dateAfter" required></div>
-        <div style="flex:1;"><label>完了時間</label><input type="time" id="endTime" required></div>
+      <div class="field-group">
+        <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
+        <div><label>完了時間</label><input type="time" id="endTime" required></div>
       </div>
       <div class="field-group">
         <div><label>点呼方法</label><select id="methodAfter"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
@@ -85,17 +77,15 @@
       </div>
       <label>アルコール検査値（後） [mg/L]</label><input type="number" id="alcAfter" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行後 点検項目</label><div id="itemsAfterContainer"></div></div>
-      <textarea id="memo" placeholder="特記事項（異常や連絡事項）" rows="3" style="margin-top:15px;"></textarea>
+      <textarea id="memoAfter" placeholder="運行後の特記事項" rows="2" style="margin-top:15px;"></textarea>
       <div class="btn-group"><button type="button" onclick="prevPage()">戻る</button><button type="submit" class="btn-submit">一括送信</button></div>
       <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット</button>
     </div>
   </form>
 </div>
 <script>
-// --- GAS URL を貼り替えてください ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxfUBqck8D72SiW0qGUXkUhW9DO4lLaMK5Hen6CJHb0vaa6aMr9ocbIvmqBAcpNW92oQA/exec";
-const STORAGE_KEY = 'report_draft_unified_v6';
-
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwArAdkf-ZqG-5ZQF9QKlon06_N2mbd43-giNkSccmv4FOD7nidCazA4xtY9AT71jZu/exec";
+const STORAGE_KEY = 'report_draft_final_v10';
 const checkItems = [
   { id: "alc", label: "アルコール検知器使用", short: "ｱﾙｺｰﾙ", on: "⚪︎", off: "×未使用" },
   { id: "tire", label: "タイヤ（空気圧・亀裂・摩耗・取付）", short: "ﾀｲﾔ", on: "⚪︎", off: "×異常" },
@@ -106,7 +96,6 @@ const checkItems = [
   { id: "drk", label: "酒気帯び有無", short: "酒気", on: "無", off: "×【有】" },
   { id: "lic", label: "免許証携帯確認", short: "免許", on: "携帯", off: "×不携帯" }
 ];
-
 function init() {
   const now = new Date();
   const y = now.getFullYear();
@@ -141,17 +130,16 @@ function nextPage() { if (!document.getElementById('distStart').value) { alert("
 function prevPage() { document.getElementById('page2').classList.remove('active'); document.getElementById('page1').classList.add('active'); document.getElementById('step2-tab').classList.remove('active'); }
 function calcTotal() { const s = parseFloat(document.getElementById('distStart').value)||0; const e = parseFloat(document.getElementById('distEnd').value)||0; document.getElementById('distTotal').value = (e-s>0)?(e-s).toFixed(1):"0.0"; }
 function saveDraft() {
-  const d = { bD:document.getElementById('dateBefore').value, aD:document.getElementById('dateAfter').value, sT:document.getElementById('startTime').value, eT:document.getElementById('endTime').value, mB:document.getElementById('methodBefore').value, mA:document.getElementById('methodAfter').value, dS:document.getElementById('distStart').value, dE:document.getElementById('distEnd').value, aB:document.getElementById('alcBefore').value, aA:document.getElementById('alcAfter').value, memo:document.getElementById('memo').value, c:{} };
+  const d = { bD:document.getElementById('dateBefore').value, aD:document.getElementById('dateAfter').value, sT:document.getElementById('startTime').value, eT:document.getElementById('endTime').value, mB:document.getElementById('methodBefore').value, mA:document.getElementById('methodAfter').value, dS:document.getElementById('distStart').value, dE:document.getElementById('distEnd').value, aB:document.getElementById('alcBefore').value, aA:document.getElementById('alcAfter').value, mBef:document.getElementById('memoBefore').value, mAft:document.getElementById('memoAfter').value, c:{} };
   checkItems.forEach(i => { d.c[i.id+"B"] = document.getElementById(i.id+"B").checked; d.c[i.id+"A"] = document.getElementById(i.id+"A").checked; });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
 }
 function loadDraft() {
   const s = localStorage.getItem(STORAGE_KEY); if (!s) return;
   const d = JSON.parse(s);
-  if(d.bD) document.getElementById('dateBefore').value = d.bD;
-  if(d.dS) document.getElementById('distStart').value = d.dS;
-  if(d.aB) document.getElementById('alcBefore').value = d.aB;
-  if(d.memo) document.getElementById('memo').value = d.memo;
+  Object.keys(d).forEach(k => { if(k!=='c'&&document.getElementById(k)) document.getElementById(k).value = d[k]; });
+  if(d.mBef) document.getElementById('memoBefore').value = d.mBef;
+  if(d.mAft) document.getElementById('memoAfter').value = d.mAft;
   checkItems.forEach(i => { ["B", "A"].forEach(suf => { const id = i.id + suf; if(d.c[id]) { document.getElementById(id).checked = true; const st = document.getElementById(id+"S"); st.textContent = i.on; st.style.color = "#00bcd4"; } }); });
   calcTotal();
 }
@@ -167,14 +155,12 @@ document.getElementById('recordForm').onsubmit = async (e) => {
   const btn = e.target.querySelector('.btn-submit');
   btn.disabled = true; btn.textContent = "送信中...";
   const data = {
-    driver: "屋比久悟", carNo: "足立481り9586",
-    dateBefore: document.getElementById('dateBefore').value, startTime: document.getElementById('startTime').value, methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value, alcBefore: document.getElementById('alcBefore').value, checkItemsBefore: getCheckResultsText("B"),
-    dateAfter: document.getElementById('dateAfter').value, endTime: document.getElementById('endTime').value, methodAfter: document.getElementById('methodAfter').value, distEnd: document.getElementById('distEnd').value, distTotal: document.getElementById('distTotal').value, alcAfter: document.getElementById('alcAfter').value, checkItemsAfter: getCheckResultsText("A"),
-    memo: document.getElementById('memo').value
+    dateBefore: document.getElementById('dateBefore').value, driver: "屋比久悟", carNo: "足立481り9586", startTime: document.getElementById('startTime').value, methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value, alcBefore: document.getElementById('alcBefore').value, checkItemsBefore: getCheckResultsText("B"), memoBefore: document.getElementById('memoBefore').value,
+    dateAfter: document.getElementById('dateAfter').value, endTime: document.getElementById('endTime').value, methodAfter: document.getElementById('methodAfter').value, distEnd: document.getElementById('distEnd').value, distTotal: document.getElementById('distTotal').value, alcAfter: document.getElementById('alcAfter').value, checkItemsAfter: getCheckResultsText("A"), memoAfter: document.getElementById('memoAfter').value
   };
   try {
     await fetch(GAS_URL, { method: "POST", mode: "no-cors", body: new URLSearchParams({contents: JSON.stringify(data)}) });
-    alert("一括送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
+    alert("送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
   } catch (err) { alert("エラー"); btn.disabled = false; }
 };
 window.onload = init;
