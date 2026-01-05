@@ -36,7 +36,8 @@
     button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; }
     .btn-next { background: var(--primary); color: #fff; }
     .btn-submit { background: #4caf50; color: #fff; }
-    .btn-clear { background: #ff5252; color: #fff; font-size: 11px; padding: 10px; margin-top: 20px; border-radius: 8px; border:none; width:100%; }
+    .btn-back { background: #78909c; color: #fff; } /* 戻るボタン用の色 */
+    .btn-cancel { background: #9e9e9e; color: #fff; font-size: 12px; margin-top: 30px; width: 100%; height: 40px; }
   </style>
 </head>
 <body>
@@ -60,8 +61,11 @@
       <label>アルコール検査値（前） [mg/L]</label><input type="number" id="alcBefore" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行前 点検項目</label><div id="itemsBeforeContainer"></div></div>
       <textarea id="memoBefore" placeholder="運行前の特記事項" rows="2" style="margin-top:15px;"></textarea>
-      <div class="btn-group"><button type="button" class="btn-next" onclick="nextPage()">次へ ＞</button></div>
+      <div class="btn-group">
+        <button type="button" class="btn-next" onclick="nextPage()">次へ（運行開始） ＞</button>
+      </div>
     </div>
+
     <div id="page2" class="page">
       <div class="field-group">
         <div><label>運行後日付</label><input type="date" id="dateAfter" required></div>
@@ -72,20 +76,27 @@
         <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
       <div class="field-group">
-        <div><label>走行距離計（後） [km]</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1" required></div>
+        <div><label>走行距離計（後） [km]</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1"></div>
         <div><label>総走行距離計 [km]</label><input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算"></div>
       </div>
       <label>アルコール検査値（後） [mg/L]</label><input type="number" id="alcAfter" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行後 点検項目</label><div id="itemsAfterContainer"></div></div>
       <textarea id="memoAfter" placeholder="運行後の特記事項" rows="2" style="margin-top:15px;"></textarea>
-      <div class="btn-group"><button type="button" onclick="prevPage()">戻る</button><button type="submit" class="btn-submit">一括送信</button></div>
-      <button type="button" class="btn-clear" onclick="clearDraft()">下書きをリセット</button>
+      
+      <div class="btn-group">
+        <button type="button" class="btn-back" onclick="prevPage()">＜ 戻る(修正)</button>
+        <button type="submit" class="btn-submit">一括送信</button>
+      </div>
+      
+      <button type="button" class="btn-cancel" onclick="resetToNew()">運行前の入力を取消して新規作成</button>
     </div>
   </form>
 </div>
+
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwArAdkf-ZqG-5ZQF9QKlon06_N2mbd43-giNkSccmv4FOD7nidCazA4xtY9AT71jZu/exec";
-const STORAGE_KEY = 'report_draft_final_v10';
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwSnNLYIgoEYACqILc6xuBo-iXBPA0bLmKncqEkc1e_bgSBMtB7VXIeJiivj8S9WREaHg/exec"; 
+const STORAGE_KEY = 'gyomu_v12_state';
+
 const checkItems = [
   { id: "alc", label: "アルコール検知器使用", short: "ｱﾙｺｰﾙ", on: "⚪︎", off: "×未使用" },
   { id: "tire", label: "タイヤ（空気圧・亀裂・摩耗・取付）", short: "ﾀｲﾔ", on: "⚪︎", off: "×異常" },
@@ -96,73 +107,182 @@ const checkItems = [
   { id: "drk", label: "酒気帯び有無", short: "酒気", on: "無", off: "×【有】" },
   { id: "lic", label: "免許証携帯確認", short: "免許", on: "携帯", off: "×不携帯" }
 ];
+
 function init() {
   const now = new Date();
-  const y = now.getFullYear();
-  const m = (now.getMonth() + 1).toString().padStart(2, '0');
-  const d = now.getDate().toString().padStart(2, '0');
-  const dStr = `${y}-${m}-${d}`;
+  const dStr = now.toISOString().split('T')[0];
   const tStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  
   document.getElementById('dateBefore').value = dStr;
   document.getElementById('dateAfter').value = dStr;
   document.getElementById('startTime').value = tStr;
   document.getElementById('endTime').value = tStr;
+
   renderItems("itemsBeforeContainer", "B");
   renderItems("itemsAfterContainer", "A");
-  loadDraft();
+
+  loadData();
+
   ['distStart','distEnd'].forEach(id => document.getElementById(id).addEventListener('input', calcTotal));
-  document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', saveDraft));
+  document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', () => saveData()));
 }
+
 function renderItems(cid, suf) {
   const container = document.getElementById(cid);
   checkItems.forEach(i => {
     const id = i.id + suf;
-    container.insertAdjacentHTML('beforeend', `<div class="check-item"><span class="label-text">${i.label}</span><div><span class="status-text" id="${id}S">${i.off}</span><label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label></div></div>`);
-    document.getElementById(id).addEventListener('change', (e) => {
-      const s = document.getElementById(id + "S");
-      s.textContent = e.target.checked ? i.on : i.off;
-      s.style.color = e.target.checked ? "#00bcd4" : "#f44336";
-      saveDraft();
+    container.insertAdjacentHTML('beforeend', `
+      <div class="check-item">
+        <span class="label-text">${i.label}</span>
+        <div>
+          <span class="status-text" id="${id}S">${i.off}</span>
+          <label class="switch"><input type="checkbox" id="${id}"><span class="slider"></span></label>
+        </div>
+      </div>`);
+    document.getElementById(id).addEventListener('change', () => {
+      updateCheckStyle(id, i);
+      saveData();
     });
   });
 }
-function nextPage() { if (!document.getElementById('distStart').value) { alert("距離を入力してください"); return; } document.getElementById('page1').classList.remove('active'); document.getElementById('page2').classList.add('active'); document.getElementById('step2-tab').classList.add('active'); window.scrollTo(0,0); }
-function prevPage() { document.getElementById('page2').classList.remove('active'); document.getElementById('page1').classList.add('active'); document.getElementById('step2-tab').classList.remove('active'); }
-function calcTotal() { const s = parseFloat(document.getElementById('distStart').value)||0; const e = parseFloat(document.getElementById('distEnd').value)||0; document.getElementById('distTotal').value = (e-s>0)?(e-s).toFixed(1):"0.0"; }
-function saveDraft() {
-  const d = { bD:document.getElementById('dateBefore').value, aD:document.getElementById('dateAfter').value, sT:document.getElementById('startTime').value, eT:document.getElementById('endTime').value, mB:document.getElementById('methodBefore').value, mA:document.getElementById('methodAfter').value, dS:document.getElementById('distStart').value, dE:document.getElementById('distEnd').value, aB:document.getElementById('alcBefore').value, aA:document.getElementById('alcAfter').value, mBef:document.getElementById('memoBefore').value, mAft:document.getElementById('memoAfter').value, c:{} };
-  checkItems.forEach(i => { d.c[i.id+"B"] = document.getElementById(i.id+"B").checked; d.c[i.id+"A"] = document.getElementById(i.id+"A").checked; });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+
+function updateCheckStyle(id, item) {
+  const cb = document.getElementById(id);
+  const st = document.getElementById(id + "S");
+  if(!cb || !st) return;
+  st.textContent = cb.checked ? item.on : item.off;
+  st.style.color = cb.checked ? "#00bcd4" : "#f44336";
 }
-function loadDraft() {
-  const s = localStorage.getItem(STORAGE_KEY); if (!s) return;
-  const d = JSON.parse(s);
-  Object.keys(d).forEach(k => { if(k!=='c'&&document.getElementById(k)) document.getElementById(k).value = d[k]; });
-  if(d.mBef) document.getElementById('memoBefore').value = d.mBef;
-  if(d.mAft) document.getElementById('memoAfter').value = d.mAft;
-  checkItems.forEach(i => { ["B", "A"].forEach(suf => { const id = i.id + suf; if(d.c[id]) { document.getElementById(id).checked = true; const st = document.getElementById(id+"S"); st.textContent = i.on; st.style.color = "#00bcd4"; } }); });
+
+function nextPage() {
+  if (!document.getElementById('distStart').value) { alert("開始距離を入力してください"); return; }
+  showPage("page2");
+  saveData("page2");
+}
+
+function prevPage() {
+  showPage("page1");
+  saveData("page1");
+}
+
+function showPage(pageId) {
+  document.getElementById('page1').classList.toggle('active', pageId === 'page1');
+  document.getElementById('page2').classList.toggle('active', pageId === 'page2');
+  document.getElementById('step1-tab').classList.toggle('active', pageId === 'page1');
+  document.getElementById('step2-tab').classList.toggle('active', pageId === 'page2');
+  window.scrollTo(0,0);
+}
+
+function calcTotal() {
+  const s = parseFloat(document.getElementById('distStart').value)||0;
+  const e = parseFloat(document.getElementById('distEnd').value)||0;
+  document.getElementById('distTotal').value = (e - s > 0) ? (e - s).toFixed(1) : "0.0";
+}
+
+function saveData(currentPage) {
+  const state = {
+    page: currentPage || (document.getElementById('page2').classList.contains('active') ? "page2" : "page1"),
+    vals: {
+      dateBefore: document.getElementById('dateBefore').value,
+      startTime: document.getElementById('startTime').value,
+      methodBefore: document.getElementById('methodBefore').value,
+      distStart: document.getElementById('distStart').value,
+      alcBefore: document.getElementById('alcBefore').value,
+      memoBefore: document.getElementById('memoBefore').value,
+      dateAfter: document.getElementById('dateAfter').value,
+      endTime: document.getElementById('endTime').value,
+      methodAfter: document.getElementById('methodAfter').value,
+      distEnd: document.getElementById('distEnd').value,
+      alcAfter: document.getElementById('alcAfter').value,
+      memoAfter: document.getElementById('memoAfter').value
+    },
+    checks: {}
+  };
+  checkItems.forEach(i => {
+    state.checks[i.id+"B"] = document.getElementById(i.id+"B").checked;
+    state.checks[i.id+"A"] = document.getElementById(i.id+"A").checked;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return;
+  const state = JSON.parse(saved);
+  
+  Object.keys(state.vals).forEach(id => {
+    if(document.getElementById(id)) document.getElementById(id).value = state.vals[id];
+  });
+  
+  checkItems.forEach(i => {
+    ["B", "A"].forEach(suf => {
+      const id = i.id + suf;
+      if(state.checks[id]) {
+        const cb = document.getElementById(id);
+        if(cb) {
+          cb.checked = true;
+          updateCheckStyle(id, i);
+        }
+      }
+    });
+  });
+
   calcTotal();
+  if(state.page === "page2") showPage("page2");
 }
-function clearDraft() { if(confirm("リセットしますか？")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+
+function resetToNew() {
+  if(confirm("全ての入力を削除して、新規作成に戻りますか？")) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+document.getElementById('recordForm').onsubmit = async (e) => {
+  e.preventDefault();
+  if (!document.getElementById('distEnd').value) { alert("終了距離を入力してください"); return; }
+  
+  const btn = e.target.querySelector('.btn-submit');
+  btn.disabled = true; btn.textContent = "送信中...";
+  
+  const data = {
+    dateBefore: document.getElementById('dateBefore').value,
+    driver: "屋比久悟",
+    carNo: "足立481り9586",
+    startTime: document.getElementById('startTime').value,
+    methodBefore: document.getElementById('methodBefore').value,
+    distStart: document.getElementById('distStart').value,
+    alcBefore: document.getElementById('alcBefore').value,
+    checkItemsBefore: getCheckResultsText("B"),
+    memoBefore: document.getElementById('memoBefore').value,
+    dateAfter: document.getElementById('dateAfter').value,
+    endTime: document.getElementById('endTime').value,
+    methodAfter: document.getElementById('methodAfter').value,
+    distEnd: document.getElementById('distEnd').value,
+    distTotal: document.getElementById('distTotal').value,
+    alcAfter: document.getElementById('alcAfter').value,
+    checkItemsAfter: getCheckResultsText("A"),
+    memoAfter: document.getElementById('memoAfter').value
+  };
+
+  try {
+    await fetch(GAS_URL, { method: "POST", mode: "no-cors", body: new URLSearchParams({contents: JSON.stringify(data)}) });
+    alert("送信完了！スプレッドシートを確認してください。");
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  } catch (err) {
+    alert("送信エラーが発生しました。");
+    btn.disabled = false; btn.textContent = "一括送信";
+  }
+};
+
 function getCheckResultsText(suffix) {
   return checkItems.map(item => {
     const isChecked = document.getElementById(item.id + suffix).checked;
     return `${item.short}:${isChecked ? item.on : item.off}`;
   }).join(", ");
 }
-document.getElementById('recordForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('.btn-submit');
-  btn.disabled = true; btn.textContent = "送信中...";
-  const data = {
-    dateBefore: document.getElementById('dateBefore').value, driver: "屋比久悟", carNo: "足立481り9586", startTime: document.getElementById('startTime').value, methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value, alcBefore: document.getElementById('alcBefore').value, checkItemsBefore: getCheckResultsText("B"), memoBefore: document.getElementById('memoBefore').value,
-    dateAfter: document.getElementById('dateAfter').value, endTime: document.getElementById('endTime').value, methodAfter: document.getElementById('methodAfter').value, distEnd: document.getElementById('distEnd').value, distTotal: document.getElementById('distTotal').value, alcAfter: document.getElementById('alcAfter').value, checkItemsAfter: getCheckResultsText("A"), memoAfter: document.getElementById('memoAfter').value
-  };
-  try {
-    await fetch(GAS_URL, { method: "POST", mode: "no-cors", body: new URLSearchParams({contents: JSON.stringify(data)}) });
-    alert("送信完了！"); localStorage.removeItem(STORAGE_KEY); location.reload();
-  } catch (err) { alert("エラー"); btn.disabled = false; }
-};
+
 window.onload = init;
 </script>
 </body>
