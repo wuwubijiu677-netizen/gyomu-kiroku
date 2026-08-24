@@ -53,6 +53,11 @@
         <div><label>運行前日付</label><input type="date" id="dateBefore" required></div>
         <div><label>開始時間</label><input type="time" id="startTime" required></div>
       </div>
+  <label>車両</label>
+  <select id="carNo" required>
+    <option value="足立481り9586">足立481り9586</option>
+    <option value="江戸川480り992">江戸川480り992</option>
+  </select>
       <div class="field-group">
         <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
         <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
@@ -203,7 +208,7 @@ document.getElementById('recordForm').onsubmit = async (e) => {
   const btn = e.target.querySelector('.btn-submit');
   btn.disabled = true; btn.textContent = "送信中...";
   const data = {
-    dateBefore: document.getElementById('dateBefore').value, driver: "屋比久悟", carNo: "足立481り9586", startTime: document.getElementById('startTime').value, methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value, alcBefore: document.getElementById('alcBefore').value, checkItemsBefore: getCheckResultsText("B"), memoBefore: document.getElementById('memoBefore').value,
+    dateBefore: document.getElementById('dateBefore').value, driver: "屋比久悟", carNo: document.getElementById('carNo').value, startTime: document.getElementById('startTime').value, methodBefore: document.getElementById('methodBefore').value, distStart: document.getElementById('distStart').value, alcBefore: document.getElementById('alcBefore').value, checkItemsBefore: getCheckResultsText("B"), memoBefore: document.getElementById('memoBefore').value,
     dateAfter: document.getElementById('dateAfter').value, endTime: document.getElementById('endTime').value, methodAfter: document.getElementById('methodAfter').value, distEnd: document.getElementById('distEnd').value, distTotal: document.getElementById('distTotal').value, alcAfter: document.getElementById('alcAfter').value, checkItemsAfter: getCheckResultsText("A"), memoAfter: document.getElementById('memoAfter').value
   };
   try {
