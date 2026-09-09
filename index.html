@@ -148,9 +148,10 @@ function updateCheckStyle(id, item) {
   st.textContent = cb.checked ? item.on : item.off;
   st.style.color = cb.checked ? "#00bcd4" : "#f44336";
 }
+  
 
 function nextPage() {
-  if (!document.getElementById('carNo').value) {
+  if (document.getElementById('carNo').selectedIndex === 0) {
   alert("車両を選択してください");
   return;
 }
