@@ -150,6 +150,10 @@ function updateCheckStyle(id, item) {
 }
 
 function nextPage() {
+  if (!document.getElementById('carNo').value) {
+  alert("車両を選択してください");
+  return;
+}
   if (!document.getElementById('distStart').value) { alert("開始距離を入力してください"); return; }
   // STEP2へ進む瞬間の時刻をセット
   document.getElementById('endTime').value = getCurrentTime();
