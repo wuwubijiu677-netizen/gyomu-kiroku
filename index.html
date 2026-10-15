@@ -236,6 +236,12 @@ function resetToNew() { if(confirm("全ての入力を削除して、新規作�
 
 document.getElementById('recordForm').onsubmit = async (e) => {
   e.preventDefault();
+  const startInput = document.getElementById('distStart');
+  if (!startInput.checkValidity()) {
+    showPage("page1");
+    startInput.reportValidity();
+    return;
+  }
   const endInput = document.getElementById('distEnd');
   if (!endInput.value) { alert("終了距離を入力してください"); endInput.focus(); return; }
   if (!endInput.checkValidity() || !validateMileage()) { endInput.reportValidity(); return; }
