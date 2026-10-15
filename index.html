@@ -38,6 +38,7 @@
     .btn-submit { background: #4caf50; color: #fff; }
     .btn-back { background: #78909c; color: #fff; }
     .btn-cancel { background: #9e9e9e; color: #fff; font-size: 12px; margin-top: 30px; width: 100%; height: 40px; }
+    .validation-error { color: #d32f2f; font-size: 12px; min-height: 1em; margin: 6px 0 0; }
   </style>
 </head>
 <body>
@@ -63,7 +64,7 @@
         <div><label>点呼方法</label><select id="methodBefore"><option>対面</option><option>電話</option><option>IT点呼</option></select></div>
         <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
-      <label>走行距離計（前） [km]</label><input type="number" id="distStart" placeholder="開始距離" step="0.1" required>
+      <label>走行距離計（前） [km]</label><input type="number" id="distStart" placeholder="開始距離" min="0" step="0.1" required>
       <label>アルコール検査値（前） [mg/L]</label><input type="number" id="alcBefore" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行前 点検項目</label><div id="itemsBeforeContainer"></div></div>
       <textarea id="memoBefore" placeholder="運行前の特記事項" rows="2" style="margin-top:15px;"></textarea>
@@ -79,9 +80,10 @@
         <div><label>執行者</label><input type="text" value="屋比久悟" class="readonly-field" readonly></div>
       </div>
       <div class="field-group">
-        <div><label>走行距離計（後） [km]</label><input type="number" id="distEnd" placeholder="終了距離" step="0.1"></div>
+        <div><label>走行距離計（後） [km]</label><input type="number" id="distEnd" placeholder="終了距離" min="0" step="0.1" aria-describedby="distanceError"></div>
         <div><label>総走行距離計 [km]</label><input type="text" id="distTotal" class="readonly-field" readonly placeholder="自動計算"></div>
       </div>
+      <p id="distanceError" class="validation-error" aria-live="polite"></p>
       <label>アルコール検査値（後） [mg/L]</label><input type="number" id="alcAfter" step="0.01" value="0.00">
       <div class="check-list-container"><label style="color:var(--primary);">▼ 運行後 点検項目</label><div id="itemsAfterContainer"></div></div>
       <textarea id="memoAfter" placeholder="運行後の特記事項" rows="2" style="margin-top:15px;"></textarea>
@@ -128,7 +130,10 @@ function init() {
   renderItems("itemsAfterContainer", "A");
   loadData();
 
-  ['distStart','distEnd'].forEach(id => document.getElementById(id).addEventListener('input', calcTotal));
+  ['distStart','distEnd'].forEach(id => document.getElementById(id).addEventListener('input', () => {
+    validateMileage();
+    calcTotal();
+  }));
   document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', () => saveData()));
 }
 
@@ -155,7 +160,9 @@ function nextPage() {
   alert("車両を選択してください");
   return;
 }
-  if (!document.getElementById('distStart').value) { alert("開始距離を入力してください"); return; }
+  const startInput = document.getElementById('distStart');
+  if (!startInput.value) { alert("開始距離を入力してください"); startInput.focus(); return; }
+  if (!startInput.checkValidity()) { startInput.reportValidity(); return; }
   // STEP2へ進む瞬間の時刻をセット
   document.getElementById('endTime').value = getCurrentTime();
   showPage("page2");
@@ -172,10 +179,29 @@ function showPage(pageId) {
   window.scrollTo(0,0);
 }
 
+function validateMileage() {
+  const startInput = document.getElementById('distStart');
+  const endInput = document.getElementById('distEnd');
+  const error = document.getElementById('distanceError');
+  const hasBothValues = startInput.value !== "" && endInput.value !== "";
+  const isReversed = hasBothValues && Number(endInput.value) < Number(startInput.value);
+  const message = isReversed ? "終了距離は開始距離以上の値を入力してください。" : "";
+
+  endInput.setCustomValidity(message);
+  error.textContent = message;
+  return !isReversed;
+}
+
 function calcTotal() {
-  const s = parseFloat(document.getElementById('distStart').value)||0;
-  const e = parseFloat(document.getElementById('distEnd').value)||0;
-  document.getElementById('distTotal').value = (e - s > 0) ? (e - s).toFixed(1) : "0.0";
+  const startValue = document.getElementById('distStart').value;
+  const endValue = document.getElementById('distEnd').value;
+  const totalInput = document.getElementById('distTotal');
+
+  if (!startValue || !endValue || !validateMileage()) {
+    totalInput.value = "";
+    return;
+  }
+  totalInput.value = (Number(endValue) - Number(startValue)).toFixed(1);
 }
 
 function saveData(currentPage) {
@@ -210,7 +236,15 @@ function resetToNew() { if(confirm("全ての入力を削除して、新規作�
 
 document.getElementById('recordForm').onsubmit = async (e) => {
   e.preventDefault();
-  if (!document.getElementById('distEnd').value) { alert("終了距離を入力してください"); return; }
+  const startInput = document.getElementById('distStart');
+  if (!startInput.checkValidity()) {
+    showPage("page1");
+    startInput.reportValidity();
+    return;
+  }
+  const endInput = document.getElementById('distEnd');
+  if (!endInput.value) { alert("終了距離を入力してください"); endInput.focus(); return; }
+  if (!endInput.checkValidity() || !validateMileage()) { endInput.reportValidity(); return; }
   const btn = e.target.querySelector('.btn-submit');
   btn.disabled = true; btn.textContent = "送信中...";
   const data = {
